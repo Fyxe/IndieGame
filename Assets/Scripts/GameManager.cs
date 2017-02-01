@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour {
 	//===============================================[Variables]====================================================
 
 	[Tooltip("This is the player script that holds all of the player's data")]
-	public Player player;
+	public Player player = null;
 
 	public string CurrentScene = "Testing";
 
@@ -22,7 +22,12 @@ public class GameManager : MonoBehaviour {
 	//============================================[Unity Functions]=================================================
 	#region UnityFunctions
 
-	//void Awake(){}
+	void Awake(){
+		if (player == null) {
+			Debug.Log ("Player object not manually set, adding...");
+			player = FindObjectOfType<Player> ();
+		}
+	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
@@ -56,7 +61,6 @@ public class GameManager : MonoBehaviour {
 	#region IEnumerator		
 
 	IEnumerator SlowUpdate_Helper(){						
-
 		Cor_SlowUpdate = true;								
 
 		SlowUpdate ();
