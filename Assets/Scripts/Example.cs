@@ -9,16 +9,16 @@ using UnityEngine;
 public class Example : MonoBehaviour {		// This example is set to half of a 1920x1080 resolution screen
 
 	//===============================================[Variables]====================================================
-
-	int NothingSpecial = 0;									// Declare variables closer to those that are related
+	int stuff 			= 1;								// Keep ='s on line near others
+	int NothingSpecial  = 0;								// Declare variables closer to those that are related
 															// Keep comments in-line with eachother 
 															// throughout the entire file if possible, if not
 															// Change it for one function and bring it back
 															// For example see line 34
 
-	bool Cor_SlowUpdate = false;							// Each coroutine should have a bool that tracks use
-	float SlowUpdateTime = 0.1f;							// Only use _ in variable names when used specifically
-															// See examples at the end of file
+	bool Cor_SlowUpdate  = false;							// Each coroutine should have a bool that tracks use
+	float SlowUpdateTime = 0.1f;							
+															
 
 	Coroutine Alpha;										// Coroutine naming should follow greek letters 
 
@@ -38,9 +38,8 @@ public class Example : MonoBehaviour {		// This example is set to half of a 1920
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	void Update(){
-		
-	}
+	//void Update(){} 										// If functions are not used but might be needed, 
+															// Comment them out to prevent extra calls
 
 	#endregion
 	//===============================================[Functions]====================================================
@@ -51,7 +50,7 @@ public class Example : MonoBehaviour {		// This example is set to half of a 1920
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
-	#region IEnumerator		// Regions must be bounded by the --- barriers 
+	#region IEnumerator		// Internal Regions must be bounded by the --- barriers 
 
 	IEnumerator SlowUpdate_Helper(){						// Specific coroutines for functions should be labeled 
 															// as X_Helper
