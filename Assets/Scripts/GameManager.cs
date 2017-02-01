@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+	Class Purpose: TBA
+*/
+
 public class GameManager : MonoBehaviour {
 
-	// Use this for initialization
+	//==============================================================================================================	
+	//--------------------------------------------------------------------------------------------------------------
 	void Start () {
 		
 	}
