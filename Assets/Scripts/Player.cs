@@ -25,9 +25,11 @@ public class Player : MonoBehaviour {
 	public float Move_Speed 		= 20f;
 	public float Jump_Force 		= 100f;
 	public float FaceLerp			= 0.1f;
-	int Move_Store					= 0;
+	int Move_Crouch_Store			= 0;
+	int Move_Crawl_Store			= 0;
 	public bool IsCrouched 			= false;
 	public bool IsGrounded  		= false;
+	public bool IsCrawling 			= false;
 		
 	[Header("Combat")]
 	public bool IsInCombat 			= false;
@@ -84,15 +86,26 @@ public class Player : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.LeftShift)) {
 			Increment_Move_Mode ();
 		} else if (Input.GetKeyDown (KeyCode.LeftControl)) {
-			Move_Store = Move_Mode;
+			Move_Crouch_Store = Move_Mode;
 			Move_Mode = 3;
 			IsCrouched = true;
-		} else if (Input.GetKeyUp   (KeyCode.LeftControl)) {
+			IsCrawling = false;
+		} else if (Input.GetKeyUp (KeyCode.LeftControl)) {			
+			Move_Mode = Move_Crouch_Store;
 			IsCrouched = false;
-			Move_Mode = Move_Store;
+			if (Move_Mode == 4) {
+				IsCrawling = true;
+			}
+		} else if (Input.GetKeyDown (KeyCode.Z)) {
+			if (IsCrawling) {
+				Move_Mode = Move_Crawl_Store;
+				IsCrawling = false;
+			} else {
+				Move_Crawl_Store = Move_Mode;
+				Move_Mode = 4;
+				IsCrawling = true;
+			}				
 		}
-
-
 
 		float Damper = 0.1f;
 		float xx = Input.GetAxis ("Horizontal") * Get_MoveSpeed() * Damper;
@@ -153,6 +166,9 @@ public class Player : MonoBehaviour {
 		if (Move_Mode > 2) {
 			Move_Mode = 0;
 		}
+		IsCrouched = false;
+		IsCrawling = false;
+
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -175,15 +191,17 @@ public class Player : MonoBehaviour {
 	float Get_MoveSpeed(){
 		switch (Move_Mode) {
 		case 0:
-			return Move_Speed * 0.8f;
+			return Move_Speed * 0.8f;	// Walking
 		case 1:
-			return Move_Speed;
+			return Move_Speed;			// Running
 		case 2:
-			return Move_Speed * 1.3f;
+			return Move_Speed * 1.3f;	// Sprinting
 		case 3:
-			return Move_Speed * 0.5f;
+			return Move_Speed * 0.5f;	// Crouching
+		case 4:
+			return Move_Speed * 0.2f;	// Crawling
 		default:
-			return Move_Speed * 0.1f;
+			return Move_Speed * 4f;		// SUPER
 		}
 	}
 
