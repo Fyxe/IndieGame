@@ -11,7 +11,7 @@ public class Player : MonoBehaviour {
 	//===============================================[Variables]====================================================
 
 	[Header("Attributes")]
-	public string Player_Name = "Bob";
+	public string Player_Name 		= "Bob";
 
 	[Header("Statistics")]
 	public float HP_Current 		= 100f;
@@ -22,7 +22,7 @@ public class Player : MonoBehaviour {
 
 	[Header("Movement")]
 	public int Move_Mode 			= 0;
-	public float Move_Speed 		= 1f;
+	public float Move_Speed 		= 20f;
 	public float Jump_Force 		= 100f;
 	public bool IsGrounded  		= false;
 	public float FaceLerp			= 0.1f;
@@ -69,12 +69,18 @@ public class Player : MonoBehaviour {
 
 	void User_Input(){
 		Input_Movement();
+		Calc_Facing ();
 		Input_Combat  ();
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
 	void Input_Movement (){
+		if (Input.GetKeyDown (KeyCode.LeftShift)) {
+			Increment_Move_Mode ();
+		}
+
+
 		float Damper = 0.1f;
 		float xx = Input.GetAxis ("Horizontal") * Get_MoveSpeed() * Damper;
 		float zz = Input.GetAxis ("Vertical")   * Get_MoveSpeed() * Damper;
@@ -94,11 +100,38 @@ public class Player : MonoBehaviour {
 		Velo.z = zz;
 
 		rb.velocity = Velo;
+	}
 
+	//--------------------------------------------------------------------------------------------------------------
 
+	void Calc_Facing(){
 		Vector3 Faceing = Vector3.Normalize (new Vector3 (Input.GetAxis ("Horizontal"), 0f, Input.GetAxis ("Vertical")));
-		if (Faceing != Vector3.zero) {
+		if (Faceing != Vector3.zero) {	
 			transform.forward = Vector3.Slerp (transform.forward, Faceing, FaceLerp);
+		}
+		/*
+		switch (Move_Mode) {
+		case 0:
+			transform.forward = Vector3.Slerp (transform.forward, Camera.main.ScreenToWorldPoint (mp) - transform.position, FaceLerp);
+			break;
+		case 1:
+			transform.forward = Vector3.Slerp (transform.forward, Camera.main.ScreenToWorldPoint (mp) - transform.position, FaceLerp * 0.5f);
+			break;
+		case 2:
+
+			break;
+		default:
+			break;
+		}
+		*/
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	void Increment_Move_Mode(){
+		Move_Mode++;
+		if (Move_Mode > 2) {
+			Move_Mode = 0;
 		}
 	}
 
@@ -122,11 +155,11 @@ public class Player : MonoBehaviour {
 	float Get_MoveSpeed(){
 		switch (Move_Mode) {
 		case 0:
-			return Move_Speed * 0.65f;
+			return Move_Speed * 0.8f;
 		case 1:
 			return Move_Speed;
 		case 2:
-			return Move_Speed * 1.7f;
+			return Move_Speed * 1.3f;
 		default:
 			return Move_Speed * 0.1f;
 		}

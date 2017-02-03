@@ -2242,7 +2242,7 @@ MonoBehaviour:
   Stamina_Current: 100
   Stamina_Max: 100
   Move_Mode: 1
-  Move_Speed: 25
+  Move_Speed: 20
   Jump_Force: 1300
   IsGrounded: 1
   FaceLerp: 0.1
