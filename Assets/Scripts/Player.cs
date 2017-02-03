@@ -83,7 +83,6 @@ public class Player : MonoBehaviour {
 		if (IsGrounded) {
 			if (Input.GetKeyDown (KeyCode.Space)) {
 				Jump ();
-				Debug.Log ("J");
 			}
 		} else {	// If not IsGrounded
 			xx *= 0.5f;
