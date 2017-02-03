@@ -49,10 +49,6 @@ public class Player : MonoBehaviour {
 		if (!Cor_SlowUpdate_Helper) {
 			Alpha = StartCoroutine (SlowUpdate_Helper ());
 		}
-
-		Vector3 a = new Vector3 (5f,-2f,1f);
-		Vector3 b = new Vector3 (2f,1f,-5f);
-		Debug.Log (Mathf.(Vector3.Dot(a,b)/a.magnitude * b.magnitude));
 	}																					
 
 	//--------------------------------------------------------------------------------------------------------------
