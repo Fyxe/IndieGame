@@ -25,6 +25,7 @@ public class Player : MonoBehaviour {
 	public float Move_Speed 		= 1f;
 	public float Jump_Force 		= 100f;
 	public bool IsGrounded  		= false;
+	public float FaceLerp			= 0.1f;
 		
 	[Header("Combat")]
 	public bool IsInCombat 			= false;
@@ -93,6 +94,12 @@ public class Player : MonoBehaviour {
 		Velo.z = zz;
 
 		rb.velocity = Velo;
+
+
+		Vector3 Faceing = Vector3.Normalize (new Vector3 (Input.GetAxis ("Horizontal"), 0f, Input.GetAxis ("Vertical")));
+		if (Faceing != Vector3.zero) {
+			transform.forward = Vector3.Slerp (transform.forward, Faceing, FaceLerp);
+		}
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
