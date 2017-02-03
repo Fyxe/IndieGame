@@ -24,8 +24,10 @@ public class Player : MonoBehaviour {
 	public int Move_Mode 			= 0;
 	public float Move_Speed 		= 20f;
 	public float Jump_Force 		= 100f;
-	public bool IsGrounded  		= false;
 	public float FaceLerp			= 0.1f;
+	int Move_Store					= 0;
+	public bool IsCrouched 			= false;
+	public bool IsGrounded  		= false;
 		
 	[Header("Combat")]
 	public bool IsInCombat 			= false;
@@ -73,6 +75,7 @@ public class Player : MonoBehaviour {
 		Input_Movement();
 		Calc_Facing ();
 		Input_Combat  ();
+		Calc_Animation ();
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -80,7 +83,15 @@ public class Player : MonoBehaviour {
 	void Input_Movement (){
 		if (Input.GetKeyDown (KeyCode.LeftShift)) {
 			Increment_Move_Mode ();
+		} else if (Input.GetKeyDown (KeyCode.LeftControl)) {
+			Move_Store = Move_Mode;
+			Move_Mode = 3;
+			IsCrouched = true;
+		} else if (Input.GetKeyUp   (KeyCode.LeftControl)) {
+			IsCrouched = false;
+			Move_Mode = Move_Store;
 		}
+
 
 
 		float Damper = 0.1f;
@@ -102,7 +113,6 @@ public class Player : MonoBehaviour {
 		Velo.z = zz;
 
 		rb.velocity = Velo;
-		anim.SetFloat ("MoveSpeed",Mathf.Abs(Velo.magnitude));
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -127,6 +137,13 @@ public class Player : MonoBehaviour {
 			break;
 		}
 		*/
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	void Calc_Animation (){
+		anim.SetFloat ("MoveSpeed",Mathf.Abs(rb.velocity.magnitude));
+		anim.SetBool ("Grounded", IsGrounded);
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -163,6 +180,8 @@ public class Player : MonoBehaviour {
 			return Move_Speed;
 		case 2:
 			return Move_Speed * 1.3f;
+		case 3:
+			return Move_Speed * 0.5f;
 		default:
 			return Move_Speed * 0.1f;
 		}
