@@ -35,6 +35,7 @@ public class Player : MonoBehaviour {
 
 
 	[Header("UnityVariables")]
+	public Animator anim;
 	Rigidbody rb;
 	float Jump_Delay 				= 0.1f;
 	float Jump_Next 				= 0;
@@ -47,6 +48,7 @@ public class Player : MonoBehaviour {
 
 	void Awake(){
 		rb = GetComponent<Rigidbody> ();
+		//anim = GetComponent<Animator> ();
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -100,6 +102,7 @@ public class Player : MonoBehaviour {
 		Velo.z = zz;
 
 		rb.velocity = Velo;
+		anim.SetFloat ("MoveSpeed",Mathf.Abs(Velo.magnitude));
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
