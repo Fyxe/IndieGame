@@ -3777,8 +3777,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 431271331}
-  m_LocalRotation: {x: -0.38008776, y: -0.14150482, z: 0.058963247, w: -0.9121585}
-  m_LocalPosition: {x: 1.6055511, y: 10.028103, z: -1.0520117}
+  m_LocalRotation: {x: -0.089331254, y: -0.32963803, z: 0.03135044, w: -0.9393487}
+  m_LocalPosition: {x: -3.857107, y: 10.800767, z: -13.123218}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3868,6 +3868,8 @@ MonoBehaviour:
   IsCrouched: 0
   IsGrounded: 1
   IsCrawling: 0
+  IsMoving: 0
+  IsExausted: 0
   IsInCombat: 0
   CombatDelay: 5
   CanDash: 0

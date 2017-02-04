@@ -16,9 +16,16 @@ public class Player : MonoBehaviour {
 	[Header("Statistics")]
 	public float HP_Current 		= 100f;
 	public float HP_Max 			= 100f;
-
+	float HP_Delay					= 1f;
+	float HP_NextUpdate;
 	public float Stamina_Current	= 100f;
 	public float Stamina_Max		= 100f;
+	float Stamina_Delay				= 1f;
+	float Stamina_NextUpdate;
+	float Stamina_Drain_Amount 		= 1f;
+	float Stamina_Drain_Delay		= 0.15f;
+	float Stamina_Drain_NextUpdate;
+
 
 	[Header("Movement")]
 	public int Move_Mode 			= 0;
@@ -30,6 +37,8 @@ public class Player : MonoBehaviour {
 	public bool IsCrouched 			= false;
 	public bool IsGrounded  		= false;
 	public bool IsCrawling 			= false;
+	public bool IsMoving			= false;
+	public bool IsExausted			= false;
 		
 	[Header("Combat")]
 	public bool IsInCombat 			= false;
@@ -39,14 +48,13 @@ public class Player : MonoBehaviour {
 
 	[Header("Abilities")]
 	public bool CanDash 			= false;
-	float DoubleTapWaitTime			= 0.2f;
-	float Waiting = 0;
-	bool DashActivated 				= false;
+	float DoubleTap_WaitTime		= 0.2f;
+	float DoubleTap_NextUpdate	 	= 0;
+	bool  DashActivated 			= false;
 	float DashSpeed 				= 5.0f;
-	Vector3 TempDash;
 	Vector3 Dash;
-	float DashDelay					= 0.2f;
-	float CurrentDashTime			= 0;
+	float Dash_Delay				= 0.2f;
+	float Dash_NextUpdate			= 0;
 	public string LastKey;
 
 	[Header("UnityVariables")]
@@ -77,7 +85,10 @@ public class Player : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	void Update(){
+		Calc_IsMoving ();
 		User_Input ();
+		Regeneration ();
+
 	}
 
 	#endregion
@@ -85,118 +96,13 @@ public class Player : MonoBehaviour {
 	#region Functions
 
 	void User_Input(){
+
 		Input_Movement();
 		Calc_Facing ();
 		Input_Combat  ();
 		Calc_Animation ();
-	}
 
-	//--------------------------------------------------------------------------------------------------------------
-
-	void Input_Movement (){
-		if (Input.GetKeyDown (KeyCode.LeftShift)) {
-			Increment_Move_Mode ();
-		} else if (Input.GetKeyDown (KeyCode.LeftControl)) {
-			Move_Crouch_Store = Move_Mode;
-			Move_Mode = 3;
-			IsCrouched = true;
-			IsCrawling = false;
-		} else if (Input.GetKeyUp (KeyCode.LeftControl)) {			
-			Move_Mode = Move_Crouch_Store;
-			IsCrouched = false;
-			if (Move_Mode == 4) {
-				IsCrawling = true;
-			}
-		} else if (Input.GetKeyDown (KeyCode.Z)) {
-			if (IsCrawling) {
-				Move_Mode = Move_Crawl_Store;
-				IsCrawling = false;
-			} else {
-				Move_Crawl_Store = Move_Mode;
-				Move_Mode = 4;
-				IsCrawling = true;
-			}				
-		} else if (Input.GetKeyDown (KeyCode.W)) {			
-			if (LastKey == "w") {
-				if (Time.time < Waiting) {
-					DashActivated = true;
-					Dash = new Vector3 (0, 0, DashSpeed);
-				} else {
-					Waiting = Time.time + DoubleTapWaitTime;	
-				}
-			} else {
-				LastKey = "w";
-				Waiting = Time.time + DoubleTapWaitTime;	
-			}			
-
-		} else if (Input.GetKeyDown (KeyCode.A)) {	
-			if (LastKey == "a") {
-				if (Time.time < Waiting){
-					DashActivated = true;
-					Dash = new Vector3 (-DashSpeed, 0, 0);
-				} else {
-					Waiting = Time.time + DoubleTapWaitTime;	
-				}
-			} else {
-				LastKey = "a";
-				Waiting = Time.time + DoubleTapWaitTime;	
-			}	
-		} else if (Input.GetKeyDown (KeyCode.S)) {		
-			if (LastKey == "s") {	
-				if (Time.time < Waiting) {
-					DashActivated = true;
-					Dash = new Vector3 (0, 0, -DashSpeed);
-				} else {
-					Waiting = Time.time + DoubleTapWaitTime;	
-				}
-			} else {
-				LastKey = "s";
-				Waiting = Time.time + DoubleTapWaitTime;	
-			}	
-		} else if (Input.GetKeyDown (KeyCode.D)) {		
-			if (LastKey == "d") {	
-				if (Time.time < Waiting) {
-					DashActivated = true;
-					Dash = new Vector3 (DashSpeed, 0, 0);
-				} else {
-					Waiting = Time.time + DoubleTapWaitTime;	
-				}
-			} else {
-				LastKey = "d";
-				Waiting = Time.time + DoubleTapWaitTime;	
-			}	
-		}
-
-		if (DashActivated && CurrentDashTime < Time.time) {			
-			CurrentDashTime = Time.time + DashDelay;
-			DashActivated = false;
-		}
-
-		if (Time.time > CurrentDashTime) {
-			Dash = Vector3.zero;
-			DashActivated = false;
-		}
-
-		float Damper = 0.1f;
-		float xx = Input.GetAxis ("Horizontal") * Get_MoveSpeed() * Damper;
-		float zz = Input.GetAxis ("Vertical")   * Get_MoveSpeed() * Damper;
-
-		Vector3 Velo = rb.velocity;
-
-		if (IsGrounded) {
-			if (Input.GetKeyDown (KeyCode.Space)) {
-				Jump ();
-			}
-		} else {	// If not IsGrounded
-			xx *= 0.5f;
-			zz *= 0.5f;
-		}
-
-		Velo.x = xx;
-		Velo.z = zz;
-
-		rb.velocity = Velo + Dash;
-	}
+	}		
 
 	//--------------------------------------------------------------------------------------------------------------
 
@@ -251,10 +157,7 @@ public class Player : MonoBehaviour {
 				transform.forward = Vector3.Slerp (transform.forward, transform.forward + (Here - transform.position), FaceLerp * stopped_damper);
 
 			}
-		}
-
-
-
+		}			
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -266,14 +169,176 @@ public class Player : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
+	void Input_Combat(){
+
+	}
+
+
+	//--------------------------------------------------------------------------------------------------------------
+	#region Movement_Functions
+
+	void Calc_IsMoving(){
+		if (rb.velocity.magnitude != 0 && 
+			(Input.GetKey (KeyCode.W) ||
+				Input.GetKey (KeyCode.A) ||
+				Input.GetKey (KeyCode.S) ||
+				Input.GetKey (KeyCode.D))) {
+			IsMoving = true;
+		} else {
+			IsMoving = false;
+		}
+
+		if (IsMoving && Move_Mode == 2) {
+			if (Time.time > Stamina_Drain_NextUpdate) {
+				Stamina_Drain_NextUpdate = Time.time + Stamina_Drain_Delay;
+				Stamina_Decay (Stamina_Drain_Amount);
+			}
+		}
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	void Input_Movement (){
+		if (Input.GetKeyDown (KeyCode.LeftShift)) {
+			Increment_Move_Mode ();
+		} else if (Input.GetKeyDown (KeyCode.LeftControl)) {
+			Move_Crouch_Store = Move_Mode;
+			Move_Mode = 3;
+			IsCrouched = true;
+			IsCrawling = false;
+		} else if (Input.GetKeyUp (KeyCode.LeftControl)) {			
+			Move_Mode = Move_Crouch_Store;
+			IsCrouched = false;
+			if (Move_Mode == 4) {
+				IsCrawling = true;
+			}
+		} else if (Input.GetKeyDown (KeyCode.Z)) {
+			if (IsCrawling) {
+				Move_Mode = Move_Crawl_Store;
+				IsCrawling = false;
+			} else {
+				Move_Crawl_Store = Move_Mode;
+				Move_Mode = 4;
+				IsCrawling = true;
+			}				
+		} else if (Input.GetKeyDown (KeyCode.W)) {			
+			if (LastKey == "w" && !IsExausted) {
+				if (Time.time < DoubleTap_NextUpdate) {
+					DashActivated = true;
+					Stamina_Decay (10);
+					Dash = new Vector3 (0, 0, DashSpeed);
+				} else {
+					DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+				}
+			} else {
+				LastKey = "w";
+				DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+			}			
+
+		} else if (Input.GetKeyDown (KeyCode.A)) {	
+			if (LastKey == "a" && !IsExausted) {
+				if (Time.time < DoubleTap_NextUpdate){
+					DashActivated = true;
+					Stamina_Decay (10);
+					Dash = new Vector3 (-DashSpeed, 0, 0);
+				} else {
+					DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+				}
+			} else {
+				LastKey = "a";
+				DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+			}	
+		} else if (Input.GetKeyDown (KeyCode.S)) {		
+			if (LastKey == "s" && !IsExausted) {	
+				if (Time.time < DoubleTap_NextUpdate) {
+					DashActivated = true;
+					Stamina_Decay (10);
+					Dash = new Vector3 (0, 0, -DashSpeed);
+				} else {
+					DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+				}
+			} else {
+				LastKey = "s";
+				DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+			}	
+		} else if (Input.GetKeyDown (KeyCode.D)) {		
+			if (LastKey == "d" && !IsExausted) {	
+				if (Time.time < DoubleTap_NextUpdate) {
+					DashActivated = true;
+					Stamina_Decay (10);
+					Dash = new Vector3 (DashSpeed, 0, 0);
+				} else {
+					DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+				}
+			} else {
+				LastKey = "d";
+				DoubleTap_NextUpdate = Time.time + DoubleTap_WaitTime;	
+			}	
+		}
+
+		if (DashActivated && Dash_NextUpdate < Time.time) {			
+			Dash_NextUpdate = Time.time + Dash_Delay;
+			DashActivated = false;
+		}
+
+		if (Time.time > Dash_NextUpdate) {
+			Dash = Vector3.zero;
+			DashActivated = false;
+		}
+
+		float Damper = 0.1f;
+		float xx = Input.GetAxis ("Horizontal") * Get_MoveSpeed() * Damper;
+		float zz = Input.GetAxis ("Vertical")   * Get_MoveSpeed() * Damper;
+
+		Vector3 Velo = rb.velocity;
+
+		if (IsGrounded) {
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				Jump ();
+			}
+		} else {	// If not IsGrounded
+			xx *= 0.5f;
+			zz *= 0.5f;
+		}
+
+		Velo.x = xx;
+		Velo.z = zz;
+
+		rb.velocity = Velo + Dash;
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
 	void Increment_Move_Mode(){
 		Move_Mode++;
-		if (Move_Mode > 2) {
-			Move_Mode = 0;
+		if (IsExausted) {
+			if (Move_Mode > 1) {
+				Move_Mode = 0;
+			}
+		} else {
+			if (Move_Mode > 2) {
+				Move_Mode = 0;
+			}
 		}
 		IsCrouched = false;
 		IsCrawling = false;
+	}
 
+	//--------------------------------------------------------------------------------------------------------------
+
+	void Increment_Move_Mode(int speed){
+		Move_Mode = speed;
+		if (IsExausted) {
+			if (Move_Mode > 1) {
+				Move_Mode = 0;
+			}
+		} else {
+			if (Move_Mode > 2) {
+				Move_Mode = 0;
+			}
+		}
+		IsCrouched = false;
+		IsCrawling = false;
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -283,12 +348,6 @@ public class Player : MonoBehaviour {
 			Jump_Next = Time.time + Jump_Delay;
 			rb.AddForce (0f, Jump_Force, 0f);
 		}
-	}
-
-	//--------------------------------------------------------------------------------------------------------------
-
-	void Input_Combat(){
-		
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -310,12 +369,13 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	#endregion
 	//--------------------------------------------------------------------------------------------------------------
-	#region HP_Commands
+	#region Stat_Commands
 
 	void Heal(float amount){		
 		HP_Current = Mathf.Clamp (HP_Current + amount,0f,HP_Max);
-		Debug.Log ("Player was healed by a ghost for: " + amount + " hp.");
+		//Debug.Log ("Player was healed by a ghost for: " + amount + " hp.");
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -323,7 +383,7 @@ public class Player : MonoBehaviour {
 	void Hurt(float amount){
 		HP_Current = Mathf.Clamp (HP_Current - amount,0f,HP_Max);
 
-		Debug.Log ("Player was hit by a ghost for: " + amount + " dmg.");
+		//Debug.Log ("Player was hit by a ghost for: " + amount + " dmg.");
 
 		if (!Cor_IsInCombat) {
 			Beta = StartCoroutine (IsInCombat_Helper ());
@@ -334,6 +394,39 @@ public class Player : MonoBehaviour {
 
 		if (HP_Current == 0) {
 			PlayerHasDied ();
+		}
+	}
+
+	//-------------------------------------------------------------------------------------------------------------
+
+	void Regeneration (){
+		if(Time.time > HP_NextUpdate){
+			HP_NextUpdate = Time.time + HP_Delay;
+			Heal (1);
+		}
+
+		if (Time.time > Stamina_NextUpdate) {
+			Stamina_NextUpdate = Time.time + Stamina_Delay;
+			Stamina_Recover (1);
+		}
+	}
+
+	//-------------------------------------------------------------------------------------------------------------
+
+	void Stamina_Recover(float amount){
+		Stamina_Current = Mathf.Clamp (Stamina_Current + amount,0f,Stamina_Max);
+		if (Stamina_Current > Stamina_Max * 0.2f) {
+			IsExausted = false;
+		}
+	}
+
+	//-------------------------------------------------------------------------------------------------------------
+
+	void Stamina_Decay(float amount){
+		Stamina_Current = Mathf.Clamp (Stamina_Current - amount,0f,Stamina_Max);
+		if (Stamina_Current == 0) {
+			Increment_Move_Mode (0);
+			IsExausted = true;
 		}
 	}
 
@@ -349,7 +442,7 @@ public class Player : MonoBehaviour {
 	void SlowUpdate(){
 
 	}
-
+		
 	//--------------------------------------------------------------------------------------------------------------
 	#region IEnumerator		
 
