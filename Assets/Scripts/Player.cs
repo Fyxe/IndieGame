@@ -37,6 +37,17 @@ public class Player : MonoBehaviour {
 	Coroutine Beta;
 	public float CombatDelay		= 5f;
 
+	[Header("Abilities")]
+	public bool CanDash 			= false;
+	float DoubleTapWaitTime			= 0.2f;
+	float Waiting = 0;
+	bool DashActivated 				= false;
+	float DashSpeed 				= 5.0f;
+	Vector3 TempDash;
+	Vector3 Dash;
+	float DashDelay					= 0.2f;
+	float CurrentDashTime			= 0;
+	public string LastKey;
 
 	[Header("UnityVariables")]
 	public Animator anim;
@@ -57,7 +68,7 @@ public class Player : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	void Start(){
+	void Start(){		
 		if (!Cor_SlowUpdate_Helper) {
 			Alpha = StartCoroutine (SlowUpdate_Helper ());
 		}
@@ -105,6 +116,65 @@ public class Player : MonoBehaviour {
 				Move_Mode = 4;
 				IsCrawling = true;
 			}				
+		} else if (Input.GetKeyDown (KeyCode.W)) {			
+			if (LastKey == "w") {
+				if (Time.time < Waiting) {
+					DashActivated = true;
+					Dash = new Vector3 (0, 0, DashSpeed);
+				} else {
+					Waiting = Time.time + DoubleTapWaitTime;	
+				}
+			} else {
+				LastKey = "w";
+				Waiting = Time.time + DoubleTapWaitTime;	
+			}			
+
+		} else if (Input.GetKeyDown (KeyCode.A)) {	
+			if (LastKey == "a") {
+				if (Time.time < Waiting){
+					DashActivated = true;
+					Dash = new Vector3 (-DashSpeed, 0, 0);
+				} else {
+					Waiting = Time.time + DoubleTapWaitTime;	
+				}
+			} else {
+				LastKey = "a";
+				Waiting = Time.time + DoubleTapWaitTime;	
+			}	
+		} else if (Input.GetKeyDown (KeyCode.S)) {		
+			if (LastKey == "s") {	
+				if (Time.time < Waiting) {
+					DashActivated = true;
+					Dash = new Vector3 (0, 0, -DashSpeed);
+				} else {
+					Waiting = Time.time + DoubleTapWaitTime;	
+				}
+			} else {
+				LastKey = "s";
+				Waiting = Time.time + DoubleTapWaitTime;	
+			}	
+		} else if (Input.GetKeyDown (KeyCode.D)) {		
+			if (LastKey == "d") {	
+				if (Time.time < Waiting) {
+					DashActivated = true;
+					Dash = new Vector3 (DashSpeed, 0, 0);
+				} else {
+					Waiting = Time.time + DoubleTapWaitTime;	
+				}
+			} else {
+				LastKey = "d";
+				Waiting = Time.time + DoubleTapWaitTime;	
+			}	
+		}
+
+		if (DashActivated && CurrentDashTime < Time.time) {			
+			CurrentDashTime = Time.time + DashDelay;
+			DashActivated = false;
+		}
+
+		if (Time.time > CurrentDashTime) {
+			Dash = Vector3.zero;
+			DashActivated = false;
 		}
 
 		float Damper = 0.1f;
@@ -125,7 +195,7 @@ public class Player : MonoBehaviour {
 		Velo.x = xx;
 		Velo.z = zz;
 
-		rb.velocity = Velo;
+		rb.velocity = Velo + Dash;
 	}
 
 	//--------------------------------------------------------------------------------------------------------------

@@ -3870,6 +3870,8 @@ MonoBehaviour:
   IsCrawling: 0
   IsInCombat: 0
   CombatDelay: 5
+  CanDash: 0
+  LastKey: 
   anim: {fileID: 2057455915}
 --- !u!54 &438051394
 Rigidbody:
@@ -13680,7 +13682,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: c97839077a01b4e46831ac3411bd36a0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.9
+      value: -1.09
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: c97839077a01b4e46831ac3411bd36a0, type: 3}
       propertyPath: m_LocalRotation.x
