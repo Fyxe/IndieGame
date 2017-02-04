@@ -132,24 +132,59 @@ public class Player : MonoBehaviour {
 
 	void Calc_Facing(){
 		Vector3 Faceing = Vector3.Normalize (new Vector3 (Input.GetAxis ("Horizontal"), 0f, Input.GetAxis ("Vertical")));
-		if (Faceing != Vector3.zero) {	
-			transform.forward = Vector3.Slerp (transform.forward, Faceing, FaceLerp);
-		}
-		/*
-		switch (Move_Mode) {
-		case 0:
-			transform.forward = Vector3.Slerp (transform.forward, Camera.main.ScreenToWorldPoint (mp) - transform.position, FaceLerp);
-			break;
-		case 1:
-			transform.forward = Vector3.Slerp (transform.forward, Camera.main.ScreenToWorldPoint (mp) - transform.position, FaceLerp * 0.5f);
-			break;
-		case 2:
 
+		float damper = 1;
+		float stopped_damper = 1;
+		bool FaceMove = true;
+
+		switch (Move_Mode) {
+		case 0:						// Walking
+			damper = 0.9f;	
+			break;
+		case 1:						// Running
+			damper = 0.55f;
+			break;
+		case 2:						// Sprinting
+			damper = 1;
+			FaceMove = false;
+			break;
+		case 3: 					// Crouching
+			damper = 0.8f;
+			stopped_damper = 0.5f;			
+			break;
+		case 4:						// Crawling
+			stopped_damper = 0.3f;
+			FaceMove = false;
 			break;
 		default:
 			break;
 		}
-		*/
+
+		if (Faceing != Vector3.zero) {	// If the player is moving
+			if (FaceMove) {
+				RaycastHit h;
+				if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out h)) {
+					Vector3 Here = h.point;
+					Here.y = transform.position.y;
+					transform.forward = Vector3.Slerp (transform.forward, transform.forward + (Here - transform.position), FaceLerp * damper);
+
+				}	
+			} else {
+				transform.forward = Vector3.Slerp (transform.forward, Faceing, FaceLerp);
+			}
+
+		} else {						// if the player is not moving			
+			RaycastHit hhh;
+			if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out hhh)) {
+				Vector3 Here = hhh.point;
+				Here.y = transform.position.y;
+				transform.forward = Vector3.Slerp (transform.forward, transform.forward + (Here - transform.position), FaceLerp * stopped_damper);
+
+			}
+		}
+
+
+
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
