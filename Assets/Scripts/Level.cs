@@ -36,13 +36,17 @@ public class Level : MonoBehaviour {
 	//===============================================[Functions]====================================================
 
 	void GenerateLevel(){
-		GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;
+		//GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;
 
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	void AddPiece(Transform LastPlace, int place){
+	void AddPiece(Transform LastPlace, int place){		
+		/*
+			DOES NOT WORK. Was trying to think through the algorihm at 2:00am and it just wasnt computing.
+			Will revisit this when I've got the time.
+		*/
 		int r = Random.Range (0,Dangerous_Pieces.Count - 1);
 		int r_start = r;
 		bool Fits = false;
