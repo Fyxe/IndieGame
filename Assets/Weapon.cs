@@ -1,33 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 /*
-	Class Purpose: Follow a given gameobject and watch it from a given offset
+	Class Purpose: store weapon data common to melee and ranged weapons
 */
-public class FollowScript : MonoBehaviour {
+abstract class Weapon : Equippable {
 
 	//===============================================[Variables]====================================================
 
-	public Vector3 Offset = new Vector3(0,8,-3);
-
-	public float LerpSpeed = 0.07f;
-
-	public GameObject Followee = null;
+	public int Item_Dmg = 1;
+	public float Item_Attack_Rate = 1f;
 
 	//============================================[Unity Functions]=================================================
-
-	void FixedUpdate(){
-		if (Followee != null) {
-			transform.LookAt (Followee.transform);
-			transform.position = Vector3.Slerp (transform.position,Followee.transform.position + Offset,LerpSpeed);
-		}
-	}
 
 	//===============================================[Functions]====================================================
 
 	//==============================================================================================================	
 
-	//--------------------------------------------------------------------------------------------------------------
 
 }	// End of class

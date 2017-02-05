@@ -1,33 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 /*
-	Class Purpose: Follow a given gameobject and watch it from a given offset
+	Class Purpose: Hold attributes for items that can be equipped
 */
-public class FollowScript : MonoBehaviour {
-
-	//===============================================[Variables]====================================================
-
-	public Vector3 Offset = new Vector3(0,8,-3);
-
-	public float LerpSpeed = 0.07f;
-
-	public GameObject Followee = null;
+abstract class Equippable : Item {
 
 	//============================================[Unity Functions]=================================================
 
-	void FixedUpdate(){
-		if (Followee != null) {
-			transform.LookAt (Followee.transform);
-			transform.position = Vector3.Slerp (transform.position,Followee.transform.position + Offset,LerpSpeed);
-		}
-	}
+	public int Item_Int	= 0;
+	public int Item_Dex	= 0;
+	public int Item_Str	= 0;
+
+	public int Equip_Spot = 0;
+	/*
+	0 - Head
+	1 - Chest
+	2 - Legs
+	3 - Feet
+	4 - Hands
+	5 - Neck
+	6 - Finger	
+	*/
 
 	//===============================================[Functions]====================================================
 
 	//==============================================================================================================	
 
 	//--------------------------------------------------------------------------------------------------------------
+
 
 }	// End of class

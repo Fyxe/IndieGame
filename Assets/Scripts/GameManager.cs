@@ -15,6 +15,14 @@ public class GameManager : MonoBehaviour {
 
 	public string CurrentScene = "Testing";
 
+	public Level CurrentLevel;
+
+	[Header("Options")]
+	[Range(0,3)]
+	public int Difficulty = 0;
+
+
+	[Header("Unity Usefuls")]
 	bool Cor_SlowUpdate = false;							
 	float SlowUpdateTime = 0.1f;							
 	Coroutine Alpha;										

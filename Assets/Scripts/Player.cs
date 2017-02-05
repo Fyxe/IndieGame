@@ -71,7 +71,6 @@ public class Player : MonoBehaviour {
 
 	void Awake(){
 		rb = GetComponent<Rigidbody> ();
-		//anim = GetComponent<Animator> ();
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -95,6 +94,12 @@ public class Player : MonoBehaviour {
 	//===============================================[Functions]====================================================
 	#region Functions
 
+	void SlowUpdate(){
+
+	}
+
+	//-------------------------------------------------------------------------------------------------------------
+
 	void User_Input(){
 
 		Input_Movement();
@@ -107,11 +112,11 @@ public class Player : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	void Calc_Facing(){
-		Vector3 Faceing = Vector3.Normalize (new Vector3 (Input.GetAxis ("Horizontal"), 0f, Input.GetAxis ("Vertical")));
+		Vector3 MovementVector = Vector3.Normalize (new Vector3 (Input.GetAxis ("Horizontal"), 0f, Input.GetAxis ("Vertical")));
 
 		float damper = 1;
 		float stopped_damper = 1;
-		bool FaceMove = true;
+		bool Face_MousePosition = true;
 
 		switch (Move_Mode) {
 		case 0:						// Walking
@@ -122,22 +127,23 @@ public class Player : MonoBehaviour {
 			break;
 		case 2:						// Sprinting
 			damper = 1;
-			FaceMove = false;
+			Face_MousePosition = false;
 			break;
 		case 3: 					// Crouching
 			damper = 0.8f;
 			stopped_damper = 0.5f;			
 			break;
 		case 4:						// Crawling
+			damper = 0.3f;
 			stopped_damper = 0.3f;
-			FaceMove = false;
+			Face_MousePosition = false;
 			break;
 		default:
 			break;
 		}
 
-		if (Faceing != Vector3.zero) {	// If the player is moving
-			if (FaceMove) {
+		if (MovementVector != Vector3.zero) {	// If the player is moving
+			if (Face_MousePosition) {
 				RaycastHit h;
 				if (Physics.Raycast (Camera.main.ScreenPointToRay (Input.mousePosition), out h)) {
 					Vector3 Here = h.point;
@@ -146,7 +152,7 @@ public class Player : MonoBehaviour {
 
 				}	
 			} else {
-				transform.forward = Vector3.Slerp (transform.forward, Faceing, FaceLerp);
+				transform.forward = Vector3.Slerp (transform.forward, MovementVector, FaceLerp);
 			}
 
 		} else {						// if the player is not moving			
@@ -435,12 +441,6 @@ public class Player : MonoBehaviour {
 
 	void PlayerHasDied(){
 		
-	}
-
-	//--------------------------------------------------------------------------------------------------------------
-
-	void SlowUpdate(){
-
 	}
 		
 	//--------------------------------------------------------------------------------------------------------------

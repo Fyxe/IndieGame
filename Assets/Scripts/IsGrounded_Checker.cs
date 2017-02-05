@@ -54,4 +54,4 @@ public class IsGrounded_Checker : MonoBehaviour {
 		transform.root.GetComponent<Player> ().IsGrounded = IsGrounded;
 	}
 
-}
+}	// End of class

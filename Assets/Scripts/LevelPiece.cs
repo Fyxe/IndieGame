@@ -1,27 +1,26 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 /*
-	Class Purpose: Follow a given gameobject and watch it from a given offset
+	Class Purpose: Creating the structure that will allow different pieces to fit together.
 */
-public class FollowScript : MonoBehaviour {
+public class LevelPiece : MonoBehaviour {
 
 	//===============================================[Variables]====================================================
 
-	public Vector3 Offset = new Vector3(0,8,-3);
-
-	public float LerpSpeed = 0.07f;
-
-	public GameObject Followee = null;
+	public List<Transform> SpawnPoints = new List<Transform>();
+	public Transform North, South, East, West;
 
 	//============================================[Unity Functions]=================================================
 
-	void FixedUpdate(){
-		if (Followee != null) {
-			transform.LookAt (Followee.transform);
-			transform.position = Vector3.Slerp (transform.position,Followee.transform.position + Offset,LerpSpeed);
-		}
+	void Awake(){
+		SpawnPoints = transform.Find("SpawnPoints").Cast<Transform> ().ToList ();
+		North = transform.Find ("North");
+		South = transform.Find ("South");
+		East = transform.Find ("East");
+		West = transform.Find ("West");
+
 	}
 
 	//===============================================[Functions]====================================================
@@ -29,5 +28,9 @@ public class FollowScript : MonoBehaviour {
 	//==============================================================================================================	
 
 	//--------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 }	// End of class
