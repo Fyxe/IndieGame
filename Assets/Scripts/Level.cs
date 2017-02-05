@@ -36,7 +36,8 @@ public class Level : MonoBehaviour {
 	//===============================================[Functions]====================================================
 
 	void GenerateLevel(){
-		
+		GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;
+
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
@@ -46,9 +47,17 @@ public class Level : MonoBehaviour {
 		int r_start = r;
 		bool Fits = false;
 		while (!Fits && r != r_start) {
-			if (Physics.BoxCast (Vector3.zero, Dangerous_Pieces[r].HalfExtents,Dangerous_Pieces[r].Direction)) {
+			if (Physics.BoxCast (Vector3.zero, Dangerous_Pieces [r].HalfExtents, Dangerous_Pieces [r].Direction)) {
 				r = Iterate (r, Dangerous_Pieces.Count - 1);
+			} else {
+				Fits = true;
 			}
+		}
+
+		if (r == r_start) {
+			return;
+		} else {
+			// Place Piece
 		}
 
 	}
