@@ -8,6 +8,7 @@ public class Item : MonoBehaviour {
 
 	//===============================================[Variables]====================================================
 
+	[Header("Item Properties")]
 	public string Item_Name 		= "Item_Name";
 	public int Item_Value 			= 0;
 	public float Item_Weight 		= 1f;

@@ -3861,6 +3861,16 @@ MonoBehaviour:
   HP_Max: 100
   Stamina_Current: 50
   Stamina_Max: 100
+  Player_Head: {fileID: 0}
+  Player_Chest: {fileID: 0}
+  Player_Legs: {fileID: 0}
+  Player_Feet: {fileID: 0}
+  Player_Gloves: {fileID: 0}
+  Player_Neck: {fileID: 0}
+  Player_Finger: {fileID: 0}
+  Player_LeftHand: {fileID: 0}
+  Player_RightHand: {fileID: 0}
+  Player_Backpack: {fileID: 0}
   Move_Mode: 1
   Move_Speed: 20
   Jump_Force: 1300
@@ -4223,6 +4233,7 @@ MonoBehaviour:
   player: {fileID: 438051393}
   CurrentScene: Testing
   CurrentLevel: {fileID: 1770649875}
+  Difficulty: 0
 --- !u!4 &480738912
 Transform:
   m_ObjectHideFlags: 0
@@ -6067,7 +6078,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &839911945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6084,6 +6095,9 @@ MonoBehaviour:
   South: {fileID: 0}
   East: {fileID: 0}
   West: {fileID: 0}
+  Center: {x: 0, y: 0, z: 0}
+  HalfExtents: {x: 0, y: 0, z: 0}
+  Direction: {x: 0, y: 0, z: 0}
 --- !u!4 &839911946
 Transform:
   m_ObjectHideFlags: 0
@@ -13428,6 +13442,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d22e610c238fbe547826dc08c133582d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Level_Name: Testing Level
+  Dangerous_Pieces: []
+  Friendly_Pieces: []
+  Items: []
+  Shop_Pieces: []
+  StartPiece: {fileID: 0}
+  EndPiece: {fileID: 0}
+  PiecesToGen: 10
 --- !u!4 &1770649876
 Transform:
   m_ObjectHideFlags: 0

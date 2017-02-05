@@ -26,6 +26,19 @@ public class Player : MonoBehaviour {
 	float Stamina_Drain_Delay		= 0.15f;
 	float Stamina_Drain_NextUpdate;
 
+	[Header("Equippables")]
+	public Equippable Player_Head;
+	public Equippable Player_Chest;
+	public Equippable Player_Legs;
+	public Equippable Player_Feet;
+	public Equippable Player_Gloves;
+	public Equippable Player_Neck;
+	public Equippable Player_Finger;
+
+	public Equippable Player_LeftHand;
+	public Equippable Player_RightHand;
+
+	public Equippable Player_Backpack;
 
 	[Header("Movement")]
 	public int Move_Mode 			= 0;

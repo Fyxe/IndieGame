@@ -23,6 +23,7 @@ public class Level : MonoBehaviour {
 	public LevelPiece StartPiece;
 	public LevelPiece EndPiece;
 
+	public int PiecesToGen = 10;
 
 	//============================================[Unity Functions]=================================================
 
@@ -36,6 +37,31 @@ public class Level : MonoBehaviour {
 
 	void GenerateLevel(){
 		
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	void AddPiece(Transform LastPlace, int place){
+		int r = Random.Range (0,Dangerous_Pieces.Count - 1);
+		int r_start = r;
+		bool Fits = false;
+		while (!Fits && r != r_start) {
+			if (Physics.BoxCast (Vector3.zero, Dangerous_Pieces[r].HalfExtents,Dangerous_Pieces[r].Direction)) {
+				r = Iterate (r, Dangerous_Pieces.Count - 1);
+			}
+		}
+
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	int Iterate(int r, int max_r){
+		r++;
+		if (r > max_r) {
+			return r = 0;
+		} else {
+			return r;
+		}
 	}
 
 	//==============================================================================================================	
