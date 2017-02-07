@@ -52,7 +52,7 @@ public class Level : MonoBehaviour {
 		LevelPiece lp;
 		float angle = 0;
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 30; i++) {
 			ii = Random.Range (0, Dangerous_Pieces.Count);
 			p = Instantiate (Dangerous_Pieces [ii].gameObject, LastPos, Quaternion.identity) as GameObject;
 			lp = p.GetComponent<LevelPiece> ();
@@ -62,11 +62,14 @@ public class Level : MonoBehaviour {
 			ConnectLeft.Remove (Connect);
 
 			angle = Vector3.Angle (LastDir,lp.Get_Dir(Connect));
-			Debug.Log (angle);
-			p.transform.RotateAround (LastPos,Vector3.up,angle);
+
+			Debug.Log (Connect);
+
+
+			p.transform.RotateAround (LastPos,Vector3.up,-angle);
 
 			p.transform.position = LastPos + (p.transform.position - lp.Get_Pos(Connect));
-			Debug.Log (p.transform.position - lp.Get_Pos(Connect));
+
 			LastPos = lp.Get_Pos (ConnectLeft[Random.Range(0,ConnectLeft.Count)]);
 			LastDir = p.transform.position - LastPos;
 		}
