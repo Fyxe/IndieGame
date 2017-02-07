@@ -48,13 +48,13 @@ public class Level : MonoBehaviour {
 		int[] co = new int[]{ 0, 1, 2, 3 };
 		List<int> ConnectLeft = new List<int> (co);
 		Vector3 LastPos = Vector3.zero;
-		Vector3 LastDir = Vector3.forward;
+		Vector3 LastDir = Vector3.zero;
 		GameObject p = null;
 		LevelPiece lp;
 		float angle = 0;
 		float lastangle = 0;
 		int name = 0;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 15; i++) {
 			ii = Random.Range (0, Dangerous_Pieces.Count);
 			p = Instantiate (Dangerous_Pieces [ii].gameObject, LastPos, Quaternion.identity) as GameObject;
 			lp = p.GetComponent<LevelPiece> ();
@@ -72,11 +72,13 @@ public class Level : MonoBehaviour {
 			p.transform.RotateAround (LastPos,Vector3.up,angle);
 
 
-			Debug.Log ("Piece " + name + " | LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)) + " | Con: " + Connect + " | Conl: " + CL + " | clv: " + lp.Get_Pos(CL));
 			Vector3 test = (p.transform.position - lp.Get_Pos(Connect));
 
 
 			p.transform.position = LastPos + test;
+
+
+			Debug.Log ("Piece " + name + " | Side: " + Connect + " | NextSide: " + CL + " | angle: " + angle);
 
 			LastPos = lp.Get_Pos (CL);	// Pick from sides left
 			LastDir = p.transform.position - LastPos;
