@@ -100,8 +100,6 @@ Cortoutines:
 Functions that calculate variables or data structures should be labeled as Calc_FunctionName
 	- Such as to create the terrain and store it in a created class could be Calc_Terrain()
 
-Functions that return a boolean value should have a Check_X prefix
-	- Check_IsGrounded
 
 
 */

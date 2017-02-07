@@ -9,9 +9,12 @@ public class LevelPiece : MonoBehaviour {
 
 	//===============================================[Variables]====================================================
 
-	public List<Transform> SpawnPoints = new List<Transform>();
+	public List<Transform> SpawnPoints_Items = new List<Transform>();
+	public List<Transform> SpawnPoints_Units = new List<Transform>();
 	public Transform North, South, East, West;
-	int NumberOfSides = 0;
+	public Transform NorthDir, SouthDir, EastDir, WestDir;
+
+	public int NumberOfSides = 0;
 	int LastSide = 404;
 
 	[Header("Box Cast Data")]
@@ -22,7 +25,9 @@ public class LevelPiece : MonoBehaviour {
 	//============================================[Unity Functions]=================================================
 
 	void Awake(){
-		SpawnPoints = transform.Find ("SpawnPoints").Cast<Transform> ().ToList ();
+		SpawnPoints_Items = transform.Find ("SpawnPoints_Items").Cast<Transform> ().ToList ();
+		SpawnPoints_Units = transform.Find ("SpawnPoints_Units").Cast<Transform> ().ToList ();
+
 		North 		= transform.Find ("North");
 		South 		= transform.Find ("South");
 		East 		= transform.Find ("East");
@@ -30,18 +35,22 @@ public class LevelPiece : MonoBehaviour {
 
 		if (North != null) {
 			NumberOfSides++;
+			NorthDir = North.transform.Find ("Dir");
 			LastSide = 0;
 		}
 		if (South != null) {
 			NumberOfSides++;
+			SouthDir = South.transform.Find ("Dir");
 			LastSide = 1;
 		}
 		if (East != null) {
 			NumberOfSides++;
+			EastDir = East.transform.Find ("Dir");
 			LastSide = 2;
 		}
 		if (West != null) {
 			NumberOfSides++;
+			WestDir = West.transform.Find ("Dir");
 			LastSide = 3;
 		}
 
@@ -65,6 +74,31 @@ public class LevelPiece : MonoBehaviour {
 	public int GetLastSide(){
 		return LastSide;
 	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public Vector3 Get_NorthDir(){
+		return NorthDir.transform.position - North.transform.position; 
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public Vector3 Get_SouthDir(){
+		return SouthDir.transform.position - South.transform.position; 
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public Vector3 Get_EastDir(){
+		return EastDir.transform.position - East.transform.position; 
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public Vector3 Get_WestDir(){
+		return WestDir.transform.position - West.transform.position; 
+	}
+
 
 	//==============================================================================================================	
 
