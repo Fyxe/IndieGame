@@ -51,39 +51,39 @@ public class Level : MonoBehaviour {
 		GameObject p = null;
 		LevelPiece lp;
 		float angle = 0;
-
+		float lastangle = 0;
+		int name = 0;
 		for (int i = 0; i < 10; i++) {
 			ii = Random.Range (0, Dangerous_Pieces.Count);
 			p = Instantiate (Dangerous_Pieces [ii].gameObject, LastPos, Quaternion.identity) as GameObject;
 			lp = p.GetComponent<LevelPiece> ();
-
+			p.name = "Piece " + name;
 			ConnectLeft = new List<int>(co);
 			Connect = Random.Range (0, lp.NumberOfSides);		// Pick a side
 			ConnectLeft.Remove (Connect);
 
 			angle = Vector3.Angle (LastDir,lp.Get_Dir(Connect));
-			/*
-			if (LastPos.z > 0 && test.z < 0) {
-				test.z = (-1) * test.z;
-			} else if (LastPos.z < 0 && test.z > 0) {
-				test.z = (-1) * test.z;
-			}
-			if (LastPos.x > 0 && test.x < 0) {
-				test.x = (-1) * test.x;
-			} else if (LastPos.x < 0 && test.x > 0) {
-				test.x = (-1) * test.x;
-			}
-			*/			
+
+
+					
 
 			p.transform.RotateAround (LastPos,Vector3.up,angle);
 
-			Debug.Log ("LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)));
+			Debug.Log ("Piece "+name+" LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)) + " | Ang: " + angle + " | AngDif: " + Mathf.Abs(lastangle - angle));
 			Vector3 test = (p.transform.position - lp.Get_Pos(Connect));
 
+			if ((LastPos.z > 0 && test.z < 0) || (LastPos.z < 0 && test.z > 0) && (Mathf.Abs(lastangle - angle) == 90)) {
+				test.z = (-1) * test.z;
+			}
+			if ((LastPos.x > 0 && test.x < 0) || (LastPos.x < 0 && test.x > 0) && (Mathf.Abs(lastangle - angle) == 90)) {
+				test.x = (-1) * test.x;
+			} 
 			p.transform.position = LastPos + test;
 
 			LastPos = lp.Get_Pos (ConnectLeft[Random.Range(0,ConnectLeft.Count)]);	// Pick from sides left
 			LastDir = p.transform.position - LastPos;
+			lastangle = angle;
+			name++;
 		}
 	}
 
