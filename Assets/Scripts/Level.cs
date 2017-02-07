@@ -42,6 +42,7 @@ public class Level : MonoBehaviour {
 	//===============================================[Functions]====================================================
 
 	void GenerateLevel(){
+		Random.seed = 100;
 		int ii;
 		int Connect;
 		int[] co = new int[]{ 0, 1, 2, 3 };
@@ -61,26 +62,23 @@ public class Level : MonoBehaviour {
 			ConnectLeft = new List<int>(co);
 			Connect = Random.Range (0, lp.NumberOfSides);		// Pick a side
 			ConnectLeft.Remove (Connect);
-
+			int CL = ConnectLeft [Random.Range (0, ConnectLeft.Count)];
 			angle = Vector3.Angle (LastDir,lp.Get_Dir(Connect));
 
 
 					
 
+
 			p.transform.RotateAround (LastPos,Vector3.up,angle);
 
-			Debug.Log ("Piece "+name+" LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)) + " | Ang: " + angle + " | AngDif: " + Mathf.Abs(lastangle - angle));
+
+			Debug.Log ("Piece " + name + " | LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)) + " | Con: " + Connect + " | Conl: " + CL);
 			Vector3 test = (p.transform.position - lp.Get_Pos(Connect));
 
-			if ((LastPos.z > 0 && test.z < 0) || (LastPos.z < 0 && test.z > 0) && (Mathf.Abs(lastangle - angle) == 90)) {
-				test.z = (-1) * test.z;
-			}
-			if ((LastPos.x > 0 && test.x < 0) || (LastPos.x < 0 && test.x > 0) && (Mathf.Abs(lastangle - angle) == 90)) {
-				test.x = (-1) * test.x;
-			} 
+
 			p.transform.position = LastPos + test;
 
-			LastPos = lp.Get_Pos (ConnectLeft[Random.Range(0,ConnectLeft.Count)]);	// Pick from sides left
+			LastPos = lp.Get_Pos (CL);	// Pick from sides left
 			LastDir = p.transform.position - LastPos;
 			lastangle = angle;
 			name++;
