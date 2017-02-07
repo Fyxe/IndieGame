@@ -32,12 +32,46 @@ public class Level : MonoBehaviour {
 		Difficulty = FindObjectOfType<GameManager> ().Difficulty;
 	}
 
+	//--------------------------------------------------------------------------------------------------------------
+
 	void Start(){
-		GenerateLevel_Linear ();
+		//GenerateLevel_Linear ();
+		GenerateLevel();
 	}
 
 	//===============================================[Functions]====================================================
 
+	void GenerateLevel(){
+		int ii;
+		int Connect;
+		int[] co = new int[]{ 0, 1, 2, 3 };
+		List<int> ConnectLeft = new List<int> (co);
+		Vector3 LastPos = Vector3.zero;
+		Vector3 LastDir = Vector3.forward;
+		GameObject p = null;
+		LevelPiece lp;
+		float angle = 0;
+
+		for (int i = 0; i < 10; i++) {
+			ii = Random.Range (0, Dangerous_Pieces.Count);
+			p = Instantiate (Dangerous_Pieces [ii].gameObject, LastPos, Quaternion.identity) as GameObject;
+			lp = p.GetComponent<LevelPiece> ();
+
+			ConnectLeft = new List<int>(co);
+			Connect = Random.Range (0, lp.NumberOfSides);		// Pick a side
+			ConnectLeft.Remove (Connect);
+
+			angle = Vector3.Angle (LastDir,lp.Get_Dir(Connect));
+			p.transform.RotateAround (LastPos,Vector3.up,angle);
+
+			p.transform.position = LastPos + (lp.Get_Pos(Connect) - p.transform.position);
+
+			LastPos = lp.Get_Pos (ConnectLeft[Random.Range(0,ConnectLeft.Count)]);
+			LastDir = p.transform.position - LastPos;
+		}
+	}
+
+	/*
 	void GenerateLevel_Linear(){	// Does not check boundaries
 		//GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;
 		int PieceNumber = Random.Range (0,Dangerous_Pieces.Count - 1);
@@ -45,9 +79,9 @@ public class Level : MonoBehaviour {
 		int name = 0;
 		Vector3 LastDir = Vector3.back;
 		Vector3 LastPos = Vector3.zero;
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 16; i++) {
 			PieceNumber = Random.Range (0,Dangerous_Pieces.Count - 1);
-			W = Random.Range(0,3);
+			W = Random.Range(0,4);
 			GameObject p = null;
 			LevelPiece lp = null;
 			float angle = 0;
@@ -56,10 +90,12 @@ public class Level : MonoBehaviour {
 			case 0:	// North
 				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
 				lp = p.GetComponent<LevelPiece> ();
-				p.transform.position = LastPos + (p.transform.position - p.GetComponent<LevelPiece>().North.transform.position);
+
 
 				angle = Vector3.Angle (lp.Get_NorthDir (), LastDir);
 				p.transform.RotateAround (LastPos, Vector3.up,-angle);
+
+				p.transform.position = LastPos + (lp.North.transform.position - p.transform.position);
 
 				Debug.Log ("n");
 				LastPos = lp.South.transform.position;
@@ -67,10 +103,11 @@ public class Level : MonoBehaviour {
 			case 1:	// South
 				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
 				lp = p.GetComponent<LevelPiece> ();
-				p.transform.position = LastPos + (p.transform.position - p.GetComponent<LevelPiece>().South.transform.position);
 
 				angle = Vector3.Angle (lp.Get_SouthDir(),LastDir);
-				p.transform.RotateAround (LastPos,Vector3.up,angle);
+				p.transform.RotateAround (LastPos,Vector3.up,-angle);
+							
+				p.transform.position = LastPos + (lp.South.transform.position - p.transform.position);
 
 				Debug.Log ("s");
 				LastPos = lp.North.transform.position;
@@ -78,10 +115,11 @@ public class Level : MonoBehaviour {
 			case 2: // East
 				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
 				lp = p.GetComponent<LevelPiece> ();
-				p.transform.position = LastPos + (p.transform.position - lp.East.transform.position);
 
 				angle = Vector3.Angle (lp.Get_EastDir(),LastDir);
-				p.transform.RotateAround (LastPos,Vector3.up,angle);
+				p.transform.RotateAround (LastPos,Vector3.up,-angle);
+
+				p.transform.position = LastPos + (lp.East.transform.position - p.transform.position);
 
 				Debug.Log ("e");
 				LastPos = lp.West.position;
@@ -89,10 +127,11 @@ public class Level : MonoBehaviour {
 			case 3: // West
 				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
 				lp = p.GetComponent<LevelPiece> ();
-				p.transform.position = LastPos + (p.transform.position - lp.West.transform.position);
 
 				angle = Vector3.Angle (lp.Get_WestDir(),LastDir);
-				//p.transform.RotateAround (LastPos,Vector3.up,-angle);
+				p.transform.RotateAround (LastPos,Vector3.up,-angle);
+
+				p.transform.position = LastPos + (lp.West.transform.position - p.transform.position);
 
 				Debug.Log ("w");
 				LastPos = lp.East.transform.position;
@@ -100,12 +139,11 @@ public class Level : MonoBehaviour {
 			}
 			p.name = "Piece: " + name;
 			name++;
-			LastDir = LastPos - p.transform.position;
+			LastDir =  p.transform.position - lp.West.transform.position;
 
 		}
 	}
 
-	/*
 		Level gen backup
 		void GenerateLevel_Linear(){	// Does not check boundaries
 		//GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;

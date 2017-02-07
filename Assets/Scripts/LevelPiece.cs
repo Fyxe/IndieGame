@@ -99,6 +99,38 @@ public class LevelPiece : MonoBehaviour {
 		return WestDir.transform.position - West.transform.position; 
 	}
 
+	//--------------------------------------------------------------------------------------------------------------
+
+	public Vector3 Get_Dir(int Where){
+		
+		switch (Where) {
+		case 0:
+			return NorthDir.transform.position - North.transform.position; 
+		case 1:
+			return SouthDir.transform.position - South.transform.position; 
+		case 2:
+			return EastDir.transform.position - East.transform.position; 
+		case 3:
+			return WestDir.transform.position - West.transform.position; 			
+		}
+		return Vector3.zero;
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public Vector3 Get_Pos(int Where){
+		switch (Where) {
+		case 0:
+			return North.transform.position; 
+		case 1:
+			return South.transform.position; 
+		case 2:
+			return East.transform.position; 
+		case 3:
+			return West.transform.position; 			
+		}
+		return Vector3.zero;
+	}
 
 	//==============================================================================================================	
 
@@ -109,3 +141,4 @@ public class LevelPiece : MonoBehaviour {
 
 
 }	// End of class
+
