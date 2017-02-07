@@ -118,6 +118,20 @@ public class LevelPiece : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
+	public Vector3 Get_localPos(int Where){
+		switch (Where) {
+		case 0:
+			return North.transform.localPosition; 
+		case 1:
+			return South.transform.localPosition; 
+		case 2:
+			return East.transform.localPosition; 
+		case 3:
+			return West.transform.localPosition; 			
+		}
+		return Vector3.zero;
+	}
+
 	public Vector3 Get_Pos(int Where){
 		switch (Where) {
 		case 0:
