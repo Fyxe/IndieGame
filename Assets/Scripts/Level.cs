@@ -62,10 +62,11 @@ public class Level : MonoBehaviour {
 			ConnectLeft.Remove (Connect);
 
 			angle = Vector3.Angle (LastDir,lp.Get_Dir(Connect));
+			Debug.Log (angle);
 			p.transform.RotateAround (LastPos,Vector3.up,angle);
 
-			p.transform.position = LastPos + (lp.Get_Pos(Connect) - p.transform.position);
-
+			p.transform.position = LastPos + (p.transform.position - lp.Get_Pos(Connect));
+			Debug.Log (p.transform.position - lp.Get_Pos(Connect));
 			LastPos = lp.Get_Pos (ConnectLeft[Random.Range(0,ConnectLeft.Count)]);
 			LastDir = p.transform.position - LastPos;
 		}
