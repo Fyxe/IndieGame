@@ -13139,6 +13139,7 @@ MonoBehaviour:
   Level_Name: Testing Level
   Dangerous_Pieces:
   - {fileID: 114878054125808732, guid: 0343b060b7f688e4b80c9e4c590f3ddf, type: 2}
+  - {fileID: 114037475454312850, guid: 2c33b5ad5b0822e47bd8ef3fc5ad9600, type: 2}
   Friendly_Pieces: []
   Items: []
   Shop_Pieces: []
