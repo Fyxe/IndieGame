@@ -42,7 +42,7 @@ public class Level : MonoBehaviour {
 	//===============================================[Functions]====================================================
 
 	void GenerateLevel(){
-		Random.seed = 100;
+		Random.seed = 1001;
 		int ii;
 		int Connect;
 		int[] co = new int[]{ 0, 1, 2, 3 };
@@ -72,7 +72,7 @@ public class Level : MonoBehaviour {
 			p.transform.RotateAround (LastPos,Vector3.up,angle);
 
 
-			Debug.Log ("Piece " + name + " | LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)) + " | Con: " + Connect + " | Conl: " + CL);
+			Debug.Log ("Piece " + name + " | LP: " + LastPos + " | Other: " + (p.transform.position - lp.Get_Pos(Connect)) + " | Con: " + Connect + " | Conl: " + CL + " | clv: " + lp.Get_Pos(CL));
 			Vector3 test = (p.transform.position - lp.Get_Pos(Connect));
 
 
