@@ -10697,7 +10697,7 @@ Transform:
   m_GameObject: {fileID: 1402518100}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.4187856, y: 2.2068834, z: 0.075685024}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 494941065}
   - {fileID: 1736307095}
@@ -13536,9 +13536,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Level_Name: Testing Level
   Dangerous_Pieces:
-  - {fileID: 114463972160729418, guid: e8aff242fba3ccb4093b689792daa46a, type: 2}
-  - {fileID: 114037475454312850, guid: 2c33b5ad5b0822e47bd8ef3fc5ad9600, type: 2}
-  - {fileID: 114738541166743764, guid: 699fe1cc4be344b47a54b182091cc0a5, type: 2}
+  - {fileID: 114063008561013038, guid: 699fe1cc4be344b47a54b182091cc0a5, type: 2}
+  - {fileID: 114212517456739462, guid: e8aff242fba3ccb4093b689792daa46a, type: 2}
+  - {fileID: 114613948250463776, guid: 2c33b5ad5b0822e47bd8ef3fc5ad9600, type: 2}
   Friendly_Pieces: []
   Items: []
   Shop_Pieces: []

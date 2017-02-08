@@ -65,7 +65,14 @@ public class LevelPiece : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	public bool CheckIfFits(){		
+	public int Get_Connection(){
+		Debug.Log (OpenPoints.Count);
+		return OpenPoints [Random.Range (0, OpenPoints.Count - 1)];
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public bool CheckIfFits(){				
 		hits = Physics.BoxCastAll (transform.position,bounds.extents * 0.9f,Vector3.up,transform.rotation,bounds.size.y);
 		List<RaycastHit> Hits = hits.ToList ();
 		int HitsThatIsntConnected = 0;
