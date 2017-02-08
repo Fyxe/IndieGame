@@ -35,212 +35,69 @@ public class Level : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	void Start(){
-		//GenerateLevel_Linear ();
-		//GenerateLevel();
-		G2();
+		GenerateLevel();
 	}
 
 	//===============================================[Functions]====================================================
 
-	void G2(){
+	void GenerateLevel(){
 
-		int Random_Piece = 0;
+		int Random_Piece = 0;			// Used to get a random piece from Dangerous_Pieces
 
-		int Current_Connection = 0;
-		int Last_Connection = 0;
-		List<int> Remaining_Connections = new List<int>();
-		int Next_Conntection = 1;
-		Vector3 Last_ConnectionPosition = Vector3.zero;
-		Vector3 Last_DirectionFromConnection = Vector3.zero;
+		int Last_Connection = 0;		// The last piece connection used
+		int Current_Connection = 0;		// The current place that will connect to the last levelpiece's place
+		int Next_Conntection = 1;		// The next piece 
 
-		GameObject p;
-		LevelPiece lp;
-		LevelPiece Last_lp = null;
+		List<int> Remaining_Connections = new List<int>();	// Allows to pick a next piece which isnt the current piece
 
-		float angle = 0;
+		Vector3 Last_ConnectionPosition = Vector3.zero;			// The position of the last connection
+		Vector3 Last_DirectionFromConnection = Vector3.zero;	// The direction from the last connection inwards
+		List<int> Last_Remaining_Connections = new List<int>();	// Allows to keep track of last positions
 
-		for (int i = 0; i < 15; i++) {
-			Random_Piece = Random.Range (0,Dangerous_Pieces.Count);
-			Remaining_Connections = new List<int> ();
+		GameObject p;					// Used as the piece currently being positioned
+		LevelPiece lp;					// Used as the levelpiece of p
+		LevelPiece Last_lp = null;		// Used as the levelpiece of last p
+
+		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
+
+		for (int i = 0; i < 15; i++) {	// Currently uses a set number
+			Random_Piece = Random.Range (0,Dangerous_Pieces.Count);		// Picks a piece from the given list
+			Remaining_Connections = new List<int> ();					// Clears remaining connections
 
 			p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
 			p.name = "Piece: " + i;
-			lp = p.GetComponent<LevelPiece> ();
+			lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
 
-			for (int j = 0; j < lp.NumberOfSides; j++) {
+			for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
 				Remaining_Connections.Add(j);
 			}
 
-			Current_Connection = Random.Range (0,lp.NumberOfSides);
-			Remaining_Connections.Remove(Current_Connection);
-			Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];
 
-			p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));
 
-			if (Last_lp != null) {
-				angle = AngleSigned (lp.Get_Dir(Current_Connection),Last_lp.Get_Dir(Last_Connection) * (-1),Vector3.up);
+			Current_Connection = Random.Range (0,lp.NumberOfSides);		// Picks a random side to connect
+			Remaining_Connections.Remove(Current_Connection);			// Removes that side from being chosen again
+			Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	// Picks a random place for the next piece to connect
 
+			p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
+
+			if (Last_lp != null) {	// Checks to prevent null, only for first piece
+				angle = MathT.AngleSigned (lp.Get_Dir(Current_Connection),Last_lp.Get_Dir(Last_Connection) * (-1),Vector3.up); // calculates angle needed to rotate
 			}
 
-			p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);
+			p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);	// Rotates piece into place
 
-			Debug.Log ("LastCon: " +Last_Connection+ " Cur Con: " + Current_Connection + " Next_con: " + Next_Conntection + " Piece: " + i + " angle: " + angle);
+			//Debug.Log ("LastCon: " +Last_Connection+ " Cur Con: " + Current_Connection + " Next_con: " + Next_Conntection + " Piece: " + i + " angle: " + angle);
 
-			Last_Connection = Next_Conntection;
-			Last_ConnectionPosition = lp.Get_Pos (Next_Conntection);
-			Last_lp = lp;
+			Last_Connection = Next_Conntection;							// Sets the last connection to be the next one chosen
+			Last_ConnectionPosition = lp.Get_Pos (Next_Conntection);	// Gets it's position
+			Last_lp = lp;												// Saves the levelpiece for further use
+			Last_Remaining_Connections = Remaining_Connections;			// Saves the levelpieces remaining connections (should change to be in level piece)
 		}
 
-	}
-
-	float AngleSigned(Vector3 v1, Vector3 v2, Vector3 norm){
-		return Mathf.Atan2 (Vector3.Dot(norm,Vector3.Cross(v1,v2)),Vector3.Dot(v1,v2)) * Mathf.Rad2Deg;
-	}
-
-	/*
-	void GenerateLevel(){
-		Random.seed = 1234;
-		int ii;
-		int Connect;
-		int lastconnect = 0;
-		int[] co = new int[]{ 0, 1, 2, 3 };
-		List<int> ConnectLeft = new List<int> (co);
-		Vector3 LastPos = Vector3.zero;
-		Vector3 LastDir = Vector3.zero;
-		GameObject p = null;
-		LevelPiece lp;
-		float angle = 0;
-		float lastangle = 0;
-
-		int name = 0;
-		for (int i = 0; i < 15; i++) {
-			ii = Random.Range (0, Dangerous_Pieces.Count);
-			p = Instantiate (Dangerous_Pieces [ii].gameObject, LastPos, Quaternion.identity) as GameObject;
-			lp = p.GetComponent<LevelPiece> ();
-			p.name = "Piece " + name;
-
-			ConnectLeft = new List<int>(co);
-
-			Connect = Random.Range (0, lp.NumberOfSides);		// Pick a side
-			ConnectLeft.Remove (Connect);
-
-			int CL = ConnectLeft [Random.Range (0, ConnectLeft.Count)];
-			angle = Vector3.Angle (LastDir,lp.Get_Dir(Connect));
+	}	// End of function
 
 
-			if (Connect == lastconnect && angle == 90) {
-				//Debug.LogError ("ah");
-				//angle += 90;
-			} else {
-				
-			}
 
-			p.transform.RotateAround (LastPos,Vector3.up,angle);
-			 	
-
-			Vector3 test = (p.transform.position - lp.Get_Pos(Connect));
-
-
-			p.transform.position = LastPos + test;
-
-
-			Debug.Log ("Piece " + name + " | Side: " + Connect + " | NextSide: " + CL + " | angle: " + angle);
-
-			lastconnect = CL;
-			LastPos = lp.Get_Pos (CL);	// Pick from sides left
-			LastDir = p.transform.position - LastPos;
-			lastangle = angle;
-			name++;
-		}
-	}
-	*/
-	/*
-	void GenerateLevel_Linear(){	// Does not check boundaries
-		//GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;
-		int PieceNumber = Random.Range (0,Dangerous_Pieces.Count - 1);
-		int W = 0;
-		int name = 0;
-		Vector3 LastDir = Vector3.back;
-		Vector3 LastPos = Vector3.zero;
-		for (int i = 0; i < 16; i++) {
-			PieceNumber = Random.Range (0,Dangerous_Pieces.Count - 1);
-			W = Random.Range(0,4);
-			GameObject p = null;
-			LevelPiece lp = null;
-			float angle = 0;
-
-			switch (W) {
-			case 0:	// North
-				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
-				lp = p.GetComponent<LevelPiece> ();
-
-
-				angle = Vector3.Angle (lp.Get_NorthDir (), LastDir);
-				p.transform.RotateAround (LastPos, Vector3.up,-angle);
-
-				p.transform.position = LastPos + (lp.North.transform.position - p.transform.position);
-
-				Debug.Log ("n");
-				LastPos = lp.South.transform.position;
-				break;
-			case 1:	// South
-				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
-				lp = p.GetComponent<LevelPiece> ();
-
-				angle = Vector3.Angle (lp.Get_SouthDir(),LastDir);
-				p.transform.RotateAround (LastPos,Vector3.up,-angle);
-							
-				p.transform.position = LastPos + (lp.South.transform.position - p.transform.position);
-
-				Debug.Log ("s");
-				LastPos = lp.North.transform.position;
-				break;
-			case 2: // East
-				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
-				lp = p.GetComponent<LevelPiece> ();
-
-				angle = Vector3.Angle (lp.Get_EastDir(),LastDir);
-				p.transform.RotateAround (LastPos,Vector3.up,-angle);
-
-				p.transform.position = LastPos + (lp.East.transform.position - p.transform.position);
-
-				Debug.Log ("e");
-				LastPos = lp.West.position;
-				break;
-			case 3: // West
-				p = Instantiate (Dangerous_Pieces [PieceNumber].gameObject, Vector3.zero, Quaternion.identity) as GameObject;
-				lp = p.GetComponent<LevelPiece> ();
-
-				angle = Vector3.Angle (lp.Get_WestDir(),LastDir);
-				p.transform.RotateAround (LastPos,Vector3.up,-angle);
-
-				p.transform.position = LastPos + (lp.West.transform.position - p.transform.position);
-
-				Debug.Log ("w");
-				LastPos = lp.East.transform.position;
-				break;
-			}
-			p.name = "Piece: " + name;
-			name++;
-			LastDir =  p.transform.position - lp.West.transform.position;
-
-		}
-	}
-
-		Level gen backup
-		void GenerateLevel_Linear(){	// Does not check boundaries
-		//GameObject s = Instantiate (StartPiece.gameObject, Vector3.zero, Quaternion.identity) as GameObject;
-		int PieceNumber = Random.Range (0,Dangerous_Pieces.Count - 1);
-		Vector3 LastPos = Vector3.zero;
-		for (int i = 0; i < 10; i++) {
-			PieceNumber = Random.Range (0,Dangerous_Pieces.Count - 1);
-			GameObject p = Instantiate(Dangerous_Pieces[PieceNumber].gameObject,
-				LastPos + (Dangerous_Pieces[PieceNumber].transform.position - Dangerous_Pieces[PieceNumber].North.transform.position),
-				Quaternion.identity) as GameObject;
-			LastPos = p.GetComponent<LevelPiece>().South.transform.position;
-		}
-	}
-	*/
 
 	//--------------------------------------------------------------------------------------------------------------
 
@@ -253,11 +110,13 @@ public class Level : MonoBehaviour {
 		int r_start = r;
 		bool Fits = false;
 		while (!Fits && r != r_start) {
+			/*
 			if (Physics.BoxCast (Vector3.zero, Dangerous_Pieces [r].HalfExtents, Dangerous_Pieces [r].Direction)) {
 				r = Iterate (r, Dangerous_Pieces.Count - 1);
 			} else {
 				Fits = true;
 			}
+			*/
 		}
 
 		if (r == r_start) {
@@ -269,15 +128,6 @@ public class Level : MonoBehaviour {
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
-
-	int Iterate(int r, int max_r){
-		r++;
-		if (r > max_r) {
-			return r = 0;
-		} else {
-			return r;
-		}
-	}
 
 	//==============================================================================================================	
 

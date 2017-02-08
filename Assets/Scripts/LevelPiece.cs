@@ -18,9 +18,10 @@ public class LevelPiece : MonoBehaviour {
 	int LastSide = 404;
 
 	[Header("Box Cast Data")]
-	public Vector3 Center;
-	public Vector3 HalfExtents;
-	public Vector3 Direction;
+	public Vector3 HalfExtents = new Vector3(1f,0.01f,1f);
+	public float Box_Distance = 1f;
+
+	RaycastHit[] hits;
 
 	//============================================[Unity Functions]=================================================
 
@@ -77,30 +78,6 @@ public class LevelPiece : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	public Vector3 Get_NorthDir(){
-		return NorthDir.transform.position - North.transform.position; 
-	}
-
-	//--------------------------------------------------------------------------------------------------------------
-
-	public Vector3 Get_SouthDir(){
-		return SouthDir.transform.position - South.transform.position; 
-	}
-
-	//--------------------------------------------------------------------------------------------------------------
-
-	public Vector3 Get_EastDir(){
-		return EastDir.transform.position - East.transform.position; 
-	}
-
-	//--------------------------------------------------------------------------------------------------------------
-
-	public Vector3 Get_WestDir(){
-		return WestDir.transform.position - West.transform.position; 
-	}
-
-	//--------------------------------------------------------------------------------------------------------------
-
 	public Vector3 Get_Dir(int Where){
 		
 		switch (Where) {
@@ -130,6 +107,24 @@ public class LevelPiece : MonoBehaviour {
 			return West.transform.position; 			
 		}
 		return Vector3.zero;
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	public bool CheckIfFits(){
+		hits = Physics.BoxCastAll (transform.position,HalfExtents,Vector3.up,Quaternion.identity,Box_Distance);
+		List<RaycastHit> Hits = hits.ToList ();
+		int HitsThatIsntConnected = 0;
+		foreach (var i in Hits) {
+			if (i.collider.transform.root != this.transform.root) {
+				HitsThatIsntConnected++;
+			}
+		}
+		if (HitsThatIsntConnected > 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	//==============================================================================================================	
