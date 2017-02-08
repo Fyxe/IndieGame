@@ -60,7 +60,7 @@ public class Level : MonoBehaviour {
 
 		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
 
-		for (int i = 0; i < 15; i++) {	// Currently uses a set number
+		for (int i = 0; i < 30; i++) {	// Currently uses a set number
 			Random_Piece = Random.Range (0,Dangerous_Pieces.Count);		// Picks a piece from the given list
 			Remaining_Connections = new List<int> ();					// Clears remaining connections
 
@@ -71,7 +71,6 @@ public class Level : MonoBehaviour {
 			for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
 				Remaining_Connections.Add(j);
 			}
-
 
 
 			Current_Connection = Random.Range (0,lp.NumberOfSides);		// Picks a random side to connect
@@ -85,6 +84,26 @@ public class Level : MonoBehaviour {
 			}
 
 			p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);	// Rotates piece into place
+
+
+			/*
+			What it needs to do:
+
+			Try to gen piece at position
+			if fails -> try a different side
+			if fails -> try a different piece
+			if all pieces fail-> try a different place on the last piece connected
+			try all pieces there, if that fails, go to a piece before that, etc.
+			if lastpiece is null / startpiece, stop
+
+			baby steps:
+			- check if fits, choose another point if it doesnt
+			
+			*/
+			if (!lp.CheckIfFits ()) {
+				return;
+			}
+
 
 			//Debug.Log ("LastCon: " +Last_Connection+ " Cur Con: " + Current_Connection + " Next_con: " + Next_Conntection + " Piece: " + i + " angle: " + angle);
 

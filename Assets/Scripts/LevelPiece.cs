@@ -22,6 +22,7 @@ public class LevelPiece : MonoBehaviour {
 	public float Box_Distance = 1f;
 
 	RaycastHit[] hits;
+	public List<GameObject> Debug_hits;
 
 	//============================================[Unity Functions]=================================================
 
@@ -112,12 +113,14 @@ public class LevelPiece : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	public bool CheckIfFits(){
-		hits = Physics.BoxCastAll (transform.position,HalfExtents,Vector3.up,Quaternion.identity,Box_Distance);
+		hits = Physics.BoxCastAll (transform.position,HalfExtents,Vector3.up,transform.rotation,Box_Distance);
+		Debug.Log (transform.position);
 		List<RaycastHit> Hits = hits.ToList ();
 		int HitsThatIsntConnected = 0;
 		foreach (var i in Hits) {
-			if (i.collider.transform.root != this.transform.root) {
+			if (i.collider.transform.root.gameObject != this.transform.root.gameObject) {
 				HitsThatIsntConnected++;
+				Debug_hits.Add (i.collider.transform.root.gameObject);
 			}
 		}
 		if (HitsThatIsntConnected > 0) {
