@@ -11,15 +11,15 @@ public class LevelPiece : MonoBehaviour {
 
 	public List<Transform> SpawnPoints_Items = new List<Transform>();
 	public List<Transform> SpawnPoints_Units = new List<Transform>();
-	public Transform North, South, East, West;
-	public Transform NorthDir, SouthDir, EastDir, WestDir;
+	public List<Transform> ConnectionPoints = new List<Transform>();
+	public List<Transform> ConnectionPoint_Directions = new List<Transform>();
 
 	public int NumberOfSides = 0;
 	int LastSide = 404;
 
-	[Header("Box Cast Data")]
-	public Vector3 HalfExtents = new Vector3(1f,0.01f,1f);
-	public float Box_Distance = 1f;
+	//[Header("Box Cast Data")]
+
+	Bounds bounds;
 
 	RaycastHit[] hits;
 	public List<GameObject> Debug_hits;
@@ -27,38 +27,8 @@ public class LevelPiece : MonoBehaviour {
 	//============================================[Unity Functions]=================================================
 
 	void Awake(){
-		SpawnPoints_Items = transform.Find ("SpawnPoints_Items").Cast<Transform> ().ToList ();
-		SpawnPoints_Units = transform.Find ("SpawnPoints_Units").Cast<Transform> ().ToList ();
-
-		North 		= transform.Find ("North");
-		South 		= transform.Find ("South");
-		East 		= transform.Find ("East");
-		West 		= transform.Find ("West");
-
-		if (North != null) {
-			NumberOfSides++;
-			NorthDir = North.transform.Find ("Dir");
-			LastSide = 0;
-		}
-		if (South != null) {
-			NumberOfSides++;
-			SouthDir = South.transform.Find ("Dir");
-			LastSide = 1;
-		}
-		if (East != null) {
-			NumberOfSides++;
-			EastDir = East.transform.Find ("Dir");
-			LastSide = 2;
-		}
-		if (West != null) {
-			NumberOfSides++;
-			WestDir = West.transform.Find ("Dir");
-			LastSide = 3;
-		}
-
-		if (NumberOfSides > 1) {
-			LastSide = 404;
-		}
+		Calc_Bounds ();
+		Set_Points ();
 	}
 
 	//===============================================[Functions]====================================================
@@ -79,41 +49,20 @@ public class LevelPiece : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	public Vector3 Get_Dir(int Where){
-		
-		switch (Where) {
-		case 0:
-			return NorthDir.transform.position - North.transform.position; 
-		case 1:
-			return SouthDir.transform.position - South.transform.position; 
-		case 2:
-			return EastDir.transform.position - East.transform.position; 
-		case 3:
-			return WestDir.transform.position - West.transform.position; 			
-		}
-		return Vector3.zero;
+	public Vector3 Get_Dir(int w){
+		return ConnectionPoint_Directions [w].position - ConnectionPoints [w].position;
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	public Vector3 Get_Pos(int Where){
-		switch (Where) {
-		case 0:
-			return North.transform.position; 
-		case 1:
-			return South.transform.position; 
-		case 2:
-			return East.transform.position; 
-		case 3:
-			return West.transform.position; 			
-		}
-		return Vector3.zero;
+	public Vector3 Get_Pos(int w){
+		return ConnectionPoints [w].position;
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	public bool CheckIfFits(){
-		hits = Physics.BoxCastAll (transform.position,HalfExtents,Vector3.up,transform.rotation,Box_Distance);
+	public bool CheckIfFits(){		
+		hits = Physics.BoxCastAll (transform.position,bounds.extents * 0.9f,Vector3.up,transform.rotation,bounds.size.y);
 		Debug.Log (transform.position);
 		List<RaycastHit> Hits = hits.ToList ();
 		int HitsThatIsntConnected = 0;
@@ -128,6 +77,35 @@ public class LevelPiece : MonoBehaviour {
 		} else {
 			return true;
 		}
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	void Calc_Bounds(){
+		bounds = new Bounds (transform.position,Vector3.one);
+		Renderer[] kids = GetComponentsInChildren<Renderer> ();
+		foreach (var i in kids) {
+			bounds.Encapsulate (i.bounds);
+		}
+	}
+
+	//--------------------------------------------------------------------------------------------------------------
+
+	void Set_Points(){	//TODO change this to numbers not directions and make it take all of them
+		SpawnPoints_Items = transform.Find ("SpawnPoints_Items").Cast<Transform> ().ToList ();
+		SpawnPoints_Units = transform.Find ("SpawnPoints_Units").Cast<Transform> ().ToList ();
+
+		foreach (Transform i in transform) {
+			if (i.name == "Model" || i.name == "SpawnPoints_Items" || i.name == "SpawnPoints_Units") {
+				continue;
+			} else {
+				ConnectionPoints.Add (i);
+				ConnectionPoint_Directions.Add (i.GetChild (0).transform);
+			}
+		}
+
+		NumberOfSides = ConnectionPoints.Count ();
+			
 	}
 
 	//==============================================================================================================	
