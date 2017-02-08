@@ -81,6 +81,7 @@ public class Level : MonoBehaviour {
 
 			if (Last_lp != null) {	// Checks to prevent null, only for first piece
 				angle = MathT.AngleSigned (lp.Get_Dir(Current_Connection),Last_lp.Get_Dir(Last_Connection) * (-1),Vector3.up); // calculates angle needed to rotate
+				lp.PreviousConnection = Last_lp;
 			}
 
 			p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);	// Rotates piece into place
@@ -97,11 +98,35 @@ public class Level : MonoBehaviour {
 			if lastpiece is null / startpiece, stop
 
 			baby steps:
-			- check if fits, choose another point if it doesnt
+			- check if fits, choose another connection point if it doesnt
+			- 
 			
 			*/
 			if (!lp.CheckIfFits ()) {
-				return;
+				while (Remaining_Connections.Count > 0 && !lp.CheckIfFits()) {
+					Current_Connection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];		
+					Remaining_Connections.Remove(Current_Connection);			
+					// TODO need to add catch to test if there are no remaining connections left.
+					Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	
+
+					p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
+
+					if (Last_lp != null) {	// Checks to prevent null, only for first piece
+						angle = MathT.AngleSigned (lp.Get_Dir(Current_Connection),Last_lp.Get_Dir(Last_Connection) * (-1),Vector3.up); // calculates angle needed to rotate
+					}
+
+					p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);	// Rotates piece into place
+
+					Debug.Log ("Changing rotation!");
+				}
+				if (!lp.CheckIfFits ()) {
+
+
+
+				}
+				if (!lp.CheckIfFits ()) {
+					return;
+				}
 			}
 
 

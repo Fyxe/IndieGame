@@ -14,6 +14,8 @@ public class LevelPiece : MonoBehaviour {
 	public List<Transform> ConnectionPoints = new List<Transform>();
 	public List<Transform> ConnectionPoint_Directions = new List<Transform>();
 
+	public List<int> OpenPoints = new List<int> ();
+
 	public int NumberOfSides = 0;
 	int LastSide = 404;
 
@@ -23,6 +25,8 @@ public class LevelPiece : MonoBehaviour {
 
 	RaycastHit[] hits;
 	public List<GameObject> Debug_hits;
+
+	public LevelPiece PreviousConnection;
 
 	//============================================[Unity Functions]=================================================
 
@@ -63,7 +67,6 @@ public class LevelPiece : MonoBehaviour {
 
 	public bool CheckIfFits(){		
 		hits = Physics.BoxCastAll (transform.position,bounds.extents * 0.9f,Vector3.up,transform.rotation,bounds.size.y);
-		Debug.Log (transform.position);
 		List<RaycastHit> Hits = hits.ToList ();
 		int HitsThatIsntConnected = 0;
 		foreach (var i in Hits) {
@@ -95,17 +98,19 @@ public class LevelPiece : MonoBehaviour {
 		SpawnPoints_Items = transform.Find ("SpawnPoints_Items").Cast<Transform> ().ToList ();
 		SpawnPoints_Units = transform.Find ("SpawnPoints_Units").Cast<Transform> ().ToList ();
 
+		int j = 0;
 		foreach (Transform i in transform) {
 			if (i.name == "Model" || i.name == "SpawnPoints_Items" || i.name == "SpawnPoints_Units") {
 				continue;
 			} else {
 				ConnectionPoints.Add (i);
 				ConnectionPoint_Directions.Add (i.GetChild (0).transform);
+				OpenPoints.Add (j++);
 			}
 		}
 
 		NumberOfSides = ConnectionPoints.Count ();
-			
+
 	}
 
 	//==============================================================================================================	
