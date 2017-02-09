@@ -148,7 +148,7 @@ public class Level : MonoBehaviour {
 							p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
 							p.name = "Piece: " + i;
 							lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
-
+							lp.PreviousConnection = Last_lp;
 
 							for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
 								Remaining_Connections.Add (j);
