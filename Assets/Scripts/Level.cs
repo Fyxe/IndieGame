@@ -64,7 +64,7 @@ public class Level : MonoBehaviour {
 
 		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
 
-		for (int i = 0; i < 4; i++) {	// Currently uses a set number
+		for (int i = 0; i < 10; i++) {	// Currently uses a set number
 			Pieces_Left.Clear();
 			for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 				Pieces_Left.Add (j);
@@ -168,9 +168,10 @@ public class Level : MonoBehaviour {
 						Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
 
 					}
-					if (!lp.CheckIfFits ()) {
-						return;
-					}
+				}
+
+				if (!lp.CheckIfFits ()) {
+					return;
 				}
 			}
 
