@@ -144,7 +144,9 @@ public class Level : MonoBehaviour {
 							Random_Piece = Pieces_Left [Random.Range (0, Pieces_Left.Count - 1)];
 							Debug.Log (Random_Piece + " <- rp | pl.c -> " + (Pieces_Left.Count - 1));
 							Pieces_Left.Remove (Random_Piece);
+
 							Destroy (p.gameObject);
+
 							p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
 							p.name = "Piece: " + i;
 							lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
@@ -160,8 +162,9 @@ public class Level : MonoBehaviour {
 					if (!lp.CheckIfFits ()) {		// Try all open points	
 						Pieces_Left.Clear();
 						for (int j = 0; j < Dangerous_Pieces.Count; j++) {
-							Pieces_Left.Add (i);
+							Pieces_Left.Add (j);
 						}
+
 
 						Last_Connection = lp.PreviousConnection.Get_Connection();
 						lp.PreviousConnection.OpenPoints.Remove (Last_Connection);
@@ -171,6 +174,7 @@ public class Level : MonoBehaviour {
 				}
 
 				if (!lp.CheckIfFits ()) {
+					Destroy (p.gameObject);
 					return;
 				}
 			}
