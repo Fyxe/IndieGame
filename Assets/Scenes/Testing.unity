@@ -13539,6 +13539,7 @@ MonoBehaviour:
   - {fileID: 114063008561013038, guid: 699fe1cc4be344b47a54b182091cc0a5, type: 2}
   - {fileID: 114212517456739462, guid: e8aff242fba3ccb4093b689792daa46a, type: 2}
   - {fileID: 114613948250463776, guid: 2c33b5ad5b0822e47bd8ef3fc5ad9600, type: 2}
+  - {fileID: 114315225768744850, guid: 5c7f7efe2e7046242b76a8c15f9709fe, type: 2}
   Friendly_Pieces: []
   Items: []
   Shop_Pieces: []
