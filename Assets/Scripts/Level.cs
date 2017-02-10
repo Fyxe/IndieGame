@@ -35,12 +35,12 @@ public class Level : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	void Start(){
-		GenerateLevel();
+		StartCoroutine (GenerateLevel());
 	}
 
 	//===============================================[Functions]====================================================
 
-	void GenerateLevel(){
+	IEnumerator GenerateLevel(){
 
 		int Random_Piece = 0;			// Used to get a random piece from Dangerous_Pieces
 		List<int> Pieces_Left = new List<int>();
@@ -63,6 +63,8 @@ public class Level : MonoBehaviour {
 		LevelPiece Last_lp = null;		// Used as the levelpiece of last p
 
 		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
+
+		//Random.seed = 100;
 
 		for (int i = 0; i < 20; i++) {	// Currently uses a set number
 			Pieces_Left.Clear();
@@ -110,21 +112,23 @@ public class Level : MonoBehaviour {
 			if lastpiece is null / startpiece, stop
 
 			baby steps:
-			- check if fits, choose another connection point if it doesnt
+			- change connection point from last piece if all else fails
 			- 
 			
 			*/
+			yield return new WaitForSeconds (0.3f);
+
 			if (!lp.CheckIfFits ()) {
-				while (lp.PreviousConnection.OpenPoints.Count > 0 && !lp.CheckIfFits ()) {	// try previous pieces open pieces							
-					while (Pieces_Left.Count > 0 && !lp.CheckIfFits ()) {	// Try all pieces
+				while (lp.PreviousConnection.OpenPoints.Count + 1 > 0 && !lp.CheckIfFits ()) {	// try previous pieces open pieces							
+					while (Pieces_Left.Count + 1 > 0 && !lp.CheckIfFits ()) {	// Try all pieces
 						while (Remaining_Connections.Count > 0 && !lp.CheckIfFits ()) {	// Try all rotations of current piece							
 							Current_Connection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];		
 							Remaining_Connections.Remove (Current_Connection);	
 							if (Remaining_Connections.Count < 1) {								
-								
+								// TODO? need to add catch to test if there are no remaining connections left.	
 								break;
 							}
-							// TODO need to add catch to test if there are no remaining connections left.
+
 							Next_Conntection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];	
 							Debug.Log ("Trying new connection " + Current_Connection);
 							p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
@@ -136,18 +140,21 @@ public class Level : MonoBehaviour {
 
 							p.transform.RotateAround (lp.Get_Pos (Current_Connection), Vector3.up, angle);	// Rotates piece into place
 
-
+							yield return new WaitForSeconds (0.1f);
+						}	// End of while
+						Debug.Log ("-------------------------- No rotations of current piece will work, changing piece. --------------------------");
+						Pieces_Left.Remove (Random_Piece);
+						if (Pieces_Left.Count == 0) {
+							break;
 						}
-						Debug.Log ("No rotations of current piece will work, changing piece.");
-
 
 						if (!lp.CheckIfFits ()) {						
 							Remaining_Connections = new List<int> ();					// Clears remaining connections
 
 
 							Random_Piece = Pieces_Left [Random.Range (0, Pieces_Left.Count - 1)];
-							Debug.Log ("Trying new piece at last piece's connection position " + Last_Connection);
-							Pieces_Left.Remove (Random_Piece);
+							Debug.Log ("Trying new piece (" + Random_Piece + ") at last piece's connection position " + Last_Connection);
+
 
 							Destroy (p.gameObject);
 
@@ -159,37 +166,55 @@ public class Level : MonoBehaviour {
 							for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
 								Remaining_Connections.Add (j);
 							}
-						}										
+
+						}			
+						yield return new WaitForSeconds (0.1f);
+					} // End of while
+					Debug.Log ("-------------------------------- No pieces fit the current connection postition. --------------------------------");
+
+					if (lp.PreviousConnection.OpenPoints.Count == 0) {
+						break;
 					}
-					Debug.Log ("No pieces fit the current connection postition.");
 
 					if (!lp.CheckIfFits ()) {		// Try all open points	
-						lp.PreviousConnection.OpenPoints.Remove(Last_Connection);
+						
 						Pieces_Left.Clear ();
 						for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 							Pieces_Left.Add (j);
 						}
 
+						Destroy (p.gameObject);
+
+						p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
+						p.name = "piece " + i;
+						lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
+						lp.PreviousConnection = Last_lp;
+
+						for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
+							Remaining_Connections.Add (j);
+						}
 
 
 						Last_Connection = lp.PreviousConnection.Get_Connection ();
+						Debug.Log ("Changing last connection point to " + Last_Connection);
 						lp.PreviousConnection.OpenPoints.Remove (Last_Connection);
 						Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
-					}
-				}
-
-				if (!lp.CheckIfFits ()) {
-					Destroy (p.gameObject);
-					return;
-				}
-			}
+					}	// End of if
+					yield return new WaitForSeconds (0.1f);
+				}	// End of while
+			}	// End of if
 
 			if (lp.CheckIfFits ()) {
-				Debug.Log("===================!" + lp.name + " placed sucessfully at position " + Last_Connection + "!===================");			
+				Debug.Log ("===================! " + lp.name + " placed sucessfully at position " + Last_Connection + " !===================");			
+			} else {
+				Debug.Log("Doesn't fit!");
+					Destroy (p.gameObject);
+					//return;				
+
 			}
 
 			lp.OpenPoints.Remove (Current_Connection);
-			lp.OpenPoints.Remove (Next_Conntection);
+			//lp.OpenPoints.Remove (Next_Conntection);
 
 			//Debug.Log ("LastCon: " +Last_Connection+ " Cur Con: " + Current_Connection + " Next_con: " + Next_Conntection + " Piece: " + i + " angle: " + angle);
 

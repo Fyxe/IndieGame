@@ -66,7 +66,7 @@ public class LevelPiece : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	public int Get_Connection(){
-		return OpenPoints [Random.Range (0, OpenPoints.Count - 1)];
+		return OpenPoints [Random.Range (0, OpenPoints.Count)];
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
