@@ -66,7 +66,6 @@ public class LevelPiece : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	public int Get_Connection(){
-		Debug.Log (OpenPoints.Count);
 		return OpenPoints [Random.Range (0, OpenPoints.Count - 1)];
 	}
 

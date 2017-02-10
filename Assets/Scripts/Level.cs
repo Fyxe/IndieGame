@@ -64,7 +64,7 @@ public class Level : MonoBehaviour {
 
 		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
 
-		for (int i = 0; i < 10; i++) {	// Currently uses a set number
+		for (int i = 0; i < 20; i++) {	// Currently uses a set number
 			Pieces_Left.Clear();
 			for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 				Pieces_Left.Add (j);
@@ -75,7 +75,7 @@ public class Level : MonoBehaviour {
 			Remaining_Connections = new List<int> ();					// Clears remaining connections
 
 			p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
-			p.name = "Piece: " + i;
+			p.name = "piece " + i;
 			lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
 
 
@@ -87,6 +87,7 @@ public class Level : MonoBehaviour {
 			Current_Connection = Random.Range (0,lp.NumberOfSides);		// Picks a random side to connect
 			Remaining_Connections.Remove(Current_Connection);			// Removes that side from being chosen again
 			Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	// Picks a random place for the next piece to connect
+
 
 			p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
 
@@ -114,18 +115,18 @@ public class Level : MonoBehaviour {
 			
 			*/
 			if (!lp.CheckIfFits ()) {
-				while (lp.PreviousConnection.OpenPoints.Count > 0 && !lp.CheckIfFits()) {	// try previous pieces open pieces							
+				while (lp.PreviousConnection.OpenPoints.Count > 0 && !lp.CheckIfFits ()) {	// try previous pieces open pieces							
 					while (Pieces_Left.Count > 0 && !lp.CheckIfFits ()) {	// Try all pieces
-						while (Remaining_Connections.Count > 0 && !lp.CheckIfFits ()) {	// Try all rotations of current piece
+						while (Remaining_Connections.Count > 0 && !lp.CheckIfFits ()) {	// Try all rotations of current piece							
 							Current_Connection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];		
 							Remaining_Connections.Remove (Current_Connection);	
 							if (Remaining_Connections.Count < 1) {								
-								Debug.Log ("No rotations left!");
+								
 								break;
 							}
 							// TODO need to add catch to test if there are no remaining connections left.
 							Next_Conntection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];	
-
+							Debug.Log ("Trying new connection " + Current_Connection);
 							p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
 
 							if (Last_lp != null) {	// Checks to prevent null, only for first piece
@@ -137,39 +138,43 @@ public class Level : MonoBehaviour {
 
 
 						}
+						Debug.Log ("No rotations of current piece will work, changing piece.");
+
+
 						if (!lp.CheckIfFits ()) {						
 							Remaining_Connections = new List<int> ();					// Clears remaining connections
 
 
 							Random_Piece = Pieces_Left [Random.Range (0, Pieces_Left.Count - 1)];
-							Debug.Log (Random_Piece + " <- rp | pl.c -> " + (Pieces_Left.Count - 1));
+							Debug.Log ("Trying new piece at last piece's connection position " + Last_Connection);
 							Pieces_Left.Remove (Random_Piece);
 
 							Destroy (p.gameObject);
 
 							p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
-							p.name = "Piece: " + i;
+							p.name = "piece " + i;
 							lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
 							lp.PreviousConnection = Last_lp;
 
 							for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
 								Remaining_Connections.Add (j);
 							}
-						}
+						}										
 					}
-
+					Debug.Log ("No pieces fit the current connection postition.");
 
 					if (!lp.CheckIfFits ()) {		// Try all open points	
-						Pieces_Left.Clear();
+						lp.PreviousConnection.OpenPoints.Remove(Last_Connection);
+						Pieces_Left.Clear ();
 						for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 							Pieces_Left.Add (j);
 						}
 
 
-						Last_Connection = lp.PreviousConnection.Get_Connection();
+
+						Last_Connection = lp.PreviousConnection.Get_Connection ();
 						lp.PreviousConnection.OpenPoints.Remove (Last_Connection);
 						Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
-
 					}
 				}
 
@@ -179,6 +184,9 @@ public class Level : MonoBehaviour {
 				}
 			}
 
+			if (lp.CheckIfFits ()) {
+				Debug.Log("===================!" + lp.name + " placed sucessfully at position " + Last_Connection + "!===================");			
+			}
 
 			lp.OpenPoints.Remove (Current_Connection);
 			lp.OpenPoints.Remove (Next_Conntection);
