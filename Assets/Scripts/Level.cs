@@ -41,6 +41,18 @@ public class Level : MonoBehaviour {
 	//===============================================[Functions]====================================================
 
 	IEnumerator GenerateLevel(){
+		/*
+		This function is a mess and i'm in the process of cleaning it. BUT IT WORKS DAMMIT
+		 Here's the rundown:
+			- It tries to put a random piece onto the next connection point
+			- If it fails it rotates said piece until it fits
+			- If it doesn't, it trys another piece at that location
+			- If no pieces in any rotation fit that location it sets that location to closed and iterates back to
+				the next open location.
+			- If no pieces fit any of the previous locations it errors out (BUG neex to fix)
+			
+		If you can think of anything else that this should do let me know and i'll try it out
+		*/
 
 		int Random_Piece = 0;			// Used to get a random piece from Dangerous_Pieces
 		List<int> Pieces_Left = new List<int>();
@@ -66,7 +78,7 @@ public class Level : MonoBehaviour {
 
 		//Random.seed = 100;
 
-		for (int i = 0; i < 100; i++) {	// Currently uses a set number
+		for (int i = 0; i < 200; i++) {	// Currently uses a set number
 			Pieces_Left.Clear();
 			for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 				Pieces_Left.Add (j);
@@ -112,7 +124,7 @@ public class Level : MonoBehaviour {
 			if lastpiece is null / startpiece, stop
 
 			baby steps:
-			- change connection point from last piece if all else fails
+			- Get last piece to stop it instead of error out
 			- 
 			
 			*/
