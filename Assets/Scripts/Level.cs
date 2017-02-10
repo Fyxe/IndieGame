@@ -268,7 +268,7 @@ public class Level : MonoBehaviour {
 
 
 		// DEBUG =========
-		float PlayBackSpeed = 0.1f;
+		float PlayBackSpeed = 0.01f;
 		// ===============
 
 		int Random_Piece = 0;			// Used to get a random piece from Dangerous_Pieces
