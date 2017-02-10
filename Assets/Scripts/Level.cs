@@ -66,7 +66,7 @@ public class Level : MonoBehaviour {
 
 		//Random.seed = 100;
 
-		for (int i = 0; i < 40; i++) {	// Currently uses a set number
+		for (int i = 0; i < 100; i++) {	// Currently uses a set number
 			Pieces_Left.Clear();
 			for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 				Pieces_Left.Add (j);
@@ -214,20 +214,28 @@ public class Level : MonoBehaviour {
 					Debug.Log ("------------------------ No pieces fit any of the current connection postitions. ------------------------");
 
 
-					lp.PreviousConnection = lp.PreviousConnection.PreviousConnection;
-
-					while (lp.PreviousConnection.PreviousConnection != null && (lp.PreviousConnection.OpenPoints.Count < 1)) {
+					if (!lp.CheckIfFits ()) {
 						lp.PreviousConnection = lp.PreviousConnection.PreviousConnection;
-					}
-					if (lp.PreviousConnection.PreviousConnection == null) {
-						break;
-					}
 
-					Last_Connection = lp.PreviousConnection.Get_Connection ();
-					Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
-					Last_lp = lp.PreviousConnection;
-					//break;
+						if (lp.PreviousConnection.PreviousConnection == null) {
+							break;
+						}
 
+						while (lp.PreviousConnection.PreviousConnection != null) {
+							lp.PreviousConnection = lp.PreviousConnection.PreviousConnection;
+							if (lp.PreviousConnection.OpenPoints.Count > 0) {
+								break;
+							}
+						}
+
+
+						Last_Connection = lp.PreviousConnection.Get_Connection ();
+						Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
+						Last_lp = lp.PreviousConnection;
+						//break;
+
+
+					}
 
 
 
