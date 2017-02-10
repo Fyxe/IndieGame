@@ -66,7 +66,7 @@ public class Level : MonoBehaviour {
 
 		//Random.seed = 100;
 
-		for (int i = 0; i < 20; i++) {	// Currently uses a set number
+		for (int i = 0; i < 40; i++) {	// Currently uses a set number
 			Pieces_Left.Clear();
 			for (int j = 0; j < Dangerous_Pieces.Count; j++) {
 				Pieces_Left.Add (j);
@@ -209,7 +209,8 @@ public class Level : MonoBehaviour {
 			} else {
 				Debug.Log("Doesn't fit!");
 					Destroy (p.gameObject);
-					//return;				
+					//return;
+				break;
 
 			}
 
