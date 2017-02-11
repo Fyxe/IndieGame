@@ -316,8 +316,8 @@ public class Player : MonoBehaviour {
 				Jump ();
 			}
 		} else {	// If not IsGrounded
-			xx *= 0.5f;
-			zz *= 0.5f;
+			//xx *= 0.5f;
+			//zz *= 0.5f;
 		}
 
 		Velo.x = xx;

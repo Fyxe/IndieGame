@@ -8,6 +8,10 @@ public class Level : MonoBehaviour {
 
 	//===============================================[Variables]====================================================
 
+	[Header("Debug")]
+	public Transform StartPos;
+
+	[Header("LevelStuff")]
 	public string Level_Name 					= "New Level";
 
 	int Difficulty;
@@ -57,8 +61,8 @@ public class Level : MonoBehaviour {
 
 		List<int> Remaining_Connections = new List<int>();	// Allows to pick a next piece which isnt the current piece
 
-		Vector3 Last_ConnectionPosition = Vector3.zero;			// The position of the last connection
-		Vector3 Last_DirectionFromConnection = Vector3.zero;	// The direction from the last connection inwards
+		Vector3 Last_ConnectionPosition = StartPos.position + StartPos.transform.root.position;		// The position of the last connection
+		Vector3 Last_DirectionFromConnection = Vector3.left;				// The direction from the last connection inwards
 
 
 		GameObject p;					// Used as the piece currently being positioned
@@ -96,7 +100,7 @@ public class Level : MonoBehaviour {
 
 			p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
 
-			if (Last_lp != null) {	// Checks to prevent null, only for first piece
+			if (Last_lp != null) {						// Checks to prevent null, only for first piece
 				angle = MathT.AngleSigned (lp.Get_Dir(Current_Connection),Last_lp.Get_Dir(Last_Connection) * (-1),Vector3.up); // calculates angle needed to rotate
 				lp.PreviousConnection = Last_lp;	// Sets the previous piece for the current piece
 			}
@@ -283,8 +287,8 @@ public class Level : MonoBehaviour {
 
 		List<int> Remaining_Connections = new List<int>();	// Allows to pick a next piece which isnt the current piece
 
-		Vector3 Last_ConnectionPosition = Vector3.zero;			// The position of the last connection
-		Vector3 Last_DirectionFromConnection = Vector3.zero;	// The direction from the last connection inwards
+		Vector3 Last_ConnectionPosition = StartPos.position;			// The position of the last connection
+		Vector3 Last_DirectionFromConnection = Vector3.right;	// The direction from the last connection inwards
 
 
 		GameObject p;					// Used as the piece currently being positioned
@@ -305,7 +309,7 @@ public class Level : MonoBehaviour {
 
 			Remaining_Connections = new List<int> ();					// Clears remaining connections
 
-			p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
+			p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, StartPos.position, Quaternion.identity) as GameObject;	
 			p.name = "piece " + i;
 			lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
 
@@ -317,7 +321,13 @@ public class Level : MonoBehaviour {
 
 			Current_Connection = Random.Range (0,lp.NumberOfSides);		// Picks a random side to connect
 			Remaining_Connections.Remove(Current_Connection);			// Removes that side from being chosen again
-			Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	// Picks a random place for the next piece to connect
+
+			if (Remaining_Connections.Count == 0) {
+				Next_Conntection = 404;
+			} else {
+				Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	// Picks a random place for the next piece to connect
+			}
+
 
 
 			p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
@@ -346,16 +356,21 @@ public class Level : MonoBehaviour {
 								Remaining_Connections.Remove (Current_Connection);												// Removes this point from being chosen again
 								if (Remaining_Connections.Count < 1) {															// if there are no more connections, then this piece is an end piece
 									// TODO? add functionality to do something when this occurs
+
 									break;
+								} else {	// If there are more connections, set it so that it uses them
+									Next_Conntection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];		// The next connection is any one of the open pieces left
+									Debug.Log ("Trying new connection " + Current_Connection);	
+									p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
+
 								}
 
-								Next_Conntection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];		// The next connection is any one of the open pieces left
-								Debug.Log ("Trying new connection " + Current_Connection);	
-								p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
 
 								if (Last_lp != null) {	// Checks to prevent null, only for first piece (may change when start piece is implemented)
 									angle = MathT.AngleSigned (lp.Get_Dir (Current_Connection), Last_lp.Get_Dir (Last_Connection) * (-1), Vector3.up); // calculates angle needed to rotate
 									lp.PreviousConnection = Last_lp;											// Set the last piece's previous connection
+								} else {
+									angle = MathT.AngleSigned (lp.Get_Dir (Current_Connection), Last_DirectionFromConnection, Vector3.up); // calculates angle needed to rotate
 								}
 
 								p.transform.RotateAround (lp.Get_Pos (Current_Connection), Vector3.up, angle);	// Rotates piece into place
@@ -378,7 +393,7 @@ public class Level : MonoBehaviour {
 
 								Destroy (p.gameObject);										// Destroy this piece and choose another from those left
 
-								p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
+								p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, StartPos.position, Quaternion.identity) as GameObject;	
 								p.name = "piece " + i;
 								lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
 								lp.PreviousConnection = Last_lp;							// Set the piece's previous connection
@@ -406,7 +421,7 @@ public class Level : MonoBehaviour {
 
 							Destroy (p.gameObject);											// Destroy this piece and choose another from those left
 
-							p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
+							p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, StartPos.position, Quaternion.identity) as GameObject;	
 							p.name = "piece " + i;
 							lp = p.GetComponent<LevelPiece> ();								// These 3 statements generate the piece and name it
 							lp.PreviousConnection = Last_lp;

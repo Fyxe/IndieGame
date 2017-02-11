@@ -54,19 +54,31 @@ public class LevelPiece : MonoBehaviour {
 	//--------------------------------------------------------------------------------------------------------------
 
 	public Vector3 Get_Dir(int w){
-		return ConnectionPoint_Directions [w].position - ConnectionPoints [w].position;
+		if (w > ConnectionPoints.Count - 1) {
+			return ConnectionPoint_Directions [0].position - ConnectionPoints [0].position;
+		} else {
+			return ConnectionPoint_Directions [w].position - ConnectionPoints [w].position;
+		}
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	public Vector3 Get_Pos(int w){
-		return ConnectionPoints [w].position;
+	public Vector3 Get_Pos(int w){ 
+		if (w > ConnectionPoints.Count - 1) {
+			return ConnectionPoints [0].position;;
+		} else {
+			return ConnectionPoints [w].position;
+		}
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
 	public int Get_Connection(){
-		return OpenPoints [Random.Range (0, OpenPoints.Count)];
+		if (OpenPoints.Count == 0) {
+			return 404;
+		} else {
+			return OpenPoints [Random.Range (0, OpenPoints.Count)];
+		}
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
