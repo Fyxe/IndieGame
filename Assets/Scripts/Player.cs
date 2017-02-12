@@ -93,6 +93,9 @@ public class Player : MonoBehaviour {
 		if (!Cor_SlowUpdate_Helper) {
 			Alpha = StartCoroutine (SlowUpdate_Helper ());
 		}			
+
+		Money.Add (100);
+		Money.GetCoinage ();
 	}																					
 
 	//--------------------------------------------------------------------------------------------------------------

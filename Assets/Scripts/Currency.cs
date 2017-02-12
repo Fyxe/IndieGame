@@ -8,58 +8,29 @@ public class Currency {
 
 	//===============================================[Variables]====================================================
 
-	public List<int> Pocket = new List<int>();
+	public int Pocket;
 
 	//============================================[Unity Functions]=================================================
 
 	//===============================================[Functions]====================================================
 
-	public void Remove(int amount, int type){
-		if (type > Pocket.Count - 1) {
-			// The currency holder does not have enough money
-			return;
-		} else {
-			if (Pocket [type] < amount) {
-				// Check if there is larger currency
-				for (int i = type; i < Pocket.Count - 1; i++) {
-					if (Pocket[i] > 0){
-						Pocket [i] -= 1;
-						// need to add it to the previous piece;
-					} else {
-						continue;
-					}
-				}
-			} 
-
-			Pocket [type] -= amount;
-		}
+	public void Add(int amount){
+		Pocket += amount;
 	}
 
-	//--------------------------------------------------------------------------------------------------------------
-
-	public void Add(int amount, int type){	
-		if (Pocket.Count - 1 < type) {
-			for (int i = Pocket.Count - 1; i < type; i++) {
-				Pocket.Add (0);
-			}
-		} 
-		Pocket [type] += amount;
-		CheckAmounts ();
+	public void Subtract(int amount){
+		Pocket -= amount;
 	}
 
-	//--------------------------------------------------------------------------------------------------------------
-
-	void CheckAmounts(){
-		for (int i = 0; i < Pocket.Count; i++) {
-			if (Pocket [i] > 99) {
-				if (Pocket.Count - 1 < i + 1) {
-					Pocket.Add (0);
-				}
-				int l = Mathf.RoundToInt(Mathf.Floor(Pocket[i] / 100f));
-				Pocket [i + 1] += l;
-				Pocket [i] = Pocket [i] - (l * 100);
-			} 
+	public List<int> GetCoinage(){
+		List<int> temp = new List<int> ();
+		for (int i = 1; i < 5; i++) {
+			temp.Add (Pocket / (10^(i*2)) % 100);
 		}
+		foreach (var item in temp) {
+			Debug.Log (item);
+		}
+		return temp;
 	}
 
 	//==============================================================================================================	
