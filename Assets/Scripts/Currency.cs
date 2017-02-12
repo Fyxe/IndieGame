@@ -24,8 +24,16 @@ public class Currency {
 
 	public List<int> GetCoinage(){
 		List<int> temp = new List<int> ();
-		for (int i = 1; i < 5; i++) {
-			temp.Add (Pocket / (10^(i*2)) % 100);
+		int tempint = Pocket;
+		for (int i = 0; i < 4; i++) {			
+			if (i == 3) {				
+				temp.Add (tempint);
+				tempint /= 100;
+			} else {
+				temp.Add (tempint % 100);
+				tempint /= 100;
+			}
+
 		}
 		foreach (var item in temp) {
 			Debug.Log (item);

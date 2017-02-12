@@ -94,7 +94,7 @@ public class Player : MonoBehaviour {
 			Alpha = StartCoroutine (SlowUpdate_Helper ());
 		}			
 
-		Money.Add (100);
+		Money.Add (121234100);
 		Money.GetCoinage ();
 	}																					
 
