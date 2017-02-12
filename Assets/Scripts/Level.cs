@@ -38,222 +38,14 @@ public class Level : MonoBehaviour {
 
 	//--------------------------------------------------------------------------------------------------------------
 
-	void Start(){
-		//GenerateLevelFast();
-		StartCoroutine (GenerateLevel ());
+	void Start(){		
+		//StartCoroutine (GenerateLevel ());
+		GenerateLevel();
 	}
 
 	//===============================================[Functions]====================================================
 
-
-
-	void GenerateLevelFast(){
-
-		int Random_Piece = 0;			// Used to get a random piece from Dangerous_Pieces
-		List<int> Pieces_Left = new List<int>();
-		for (int i = 0; i < Dangerous_Pieces.Count; i++) {
-			Pieces_Left.Add (i);
-		}
-
-		int Last_Connection = 0;		// The last piece connection used
-		int Current_Connection = 0;		// The current place that will connect to the last levelpiece's place
-		int Next_Conntection = 1;		// The next piece 
-
-		List<int> Remaining_Connections = new List<int>();	// Allows to pick a next piece which isnt the current piece
-
-		Vector3 Last_ConnectionPosition = StartPos.position + StartPos.transform.root.position;		// The position of the last connection
-		Vector3 Last_DirectionFromConnection = Vector3.left;				// The direction from the last connection inwards
-
-
-		GameObject p;					// Used as the piece currently being positioned
-		LevelPiece lp;					// Used as the levelpiece of p
-		LevelPiece Last_lp = null;		// Used as the levelpiece of last p
-
-		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
-
-		//Random.seed = 100;
-
-		for (int i = 0; i < 200; i++) {	// Currently uses a set number and generates pieces until it hits that number
-			Pieces_Left.Clear();		// Clears the current cache of pieces left to choose from
-			for (int j = 0; j < Dangerous_Pieces.Count; j++) {	// Resets pieces to chosoe from
-				Pieces_Left.Add (j);
-			}
-			Random_Piece = Random.Range (0,Dangerous_Pieces.Count);		// Picks a piece from the given list
-			Pieces_Left.Remove(Random_Piece);							// Removes that piece from being chosen again
-
-			Remaining_Connections = new List<int> ();					// Clears remaining connections
-
-			p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
-			p.name = "piece " + i;
-			lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
-
-
-			for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
-				Remaining_Connections.Add(j);
-			}
-
-
-			Current_Connection = Random.Range (0,lp.NumberOfSides);		// Picks a random side to connect
-			Remaining_Connections.Remove(Current_Connection);			// Removes that side from being chosen again
-			Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	// Picks a random place for the next piece to connect
-
-
-			p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
-
-			if (Last_lp != null) {						// Checks to prevent null, only for first piece
-				angle = MathT.AngleSigned (lp.Get_Dir(Current_Connection),Last_lp.Get_Dir(Last_Connection) * (-1),Vector3.up); // calculates angle needed to rotate
-				lp.PreviousConnection = Last_lp;	// Sets the previous piece for the current piece
-			}
-
-			p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);	// Rotates piece into place
-
-
-
-			if (!lp.CheckIfFits ()) {
-				while (lp.PreviousConnection != null && !lp.CheckIfFits ()) {
-					while (lp.PreviousConnection.OpenPoints.Count + 1 > 0 && !lp.CheckIfFits ()) {	// try previous pieces open pieces							
-						while (Pieces_Left.Count + 1 > 0 && !lp.CheckIfFits ()) {	// Try all pieces
-							while (Remaining_Connections.Count > 0 && !lp.CheckIfFits ()) {	// Try all rotations of current piece							
-								Current_Connection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];		
-								Remaining_Connections.Remove (Current_Connection);	
-								if (Remaining_Connections.Count < 1) {								
-									// TODO? need to add catch to test if there are no remaining connections left.	
-									break;
-								}
-
-								Next_Conntection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];	
-								Debug.Log ("Trying new connection " + Current_Connection);
-								p.transform.position = Last_ConnectionPosition + (p.transform.position - lp.Get_Pos (Current_Connection));	// Moves the piece into place
-
-								if (Last_lp != null) {	// Checks to prevent null, only for first piece
-									angle = MathT.AngleSigned (lp.Get_Dir (Current_Connection), Last_lp.Get_Dir (Last_Connection) * (-1), Vector3.up); // calculates angle needed to rotate
-									lp.PreviousConnection = Last_lp;
-								}
-
-								p.transform.RotateAround (lp.Get_Pos (Current_Connection), Vector3.up, angle);	// Rotates piece into place
-
-
-							}	// End of while (tries all rotations)
-							Debug.Log ("-------------------------- No rotations of current piece will work, changing piece. --------------------------");
-							Pieces_Left.Remove (Random_Piece);
-							if (Pieces_Left.Count == 0) {
-								break;
-							}
-
-							if (!lp.CheckIfFits ()) {						
-								Remaining_Connections = new List<int> ();					// Clears remaining connections
-
-
-								Random_Piece = Pieces_Left [Random.Range (0, Pieces_Left.Count - 1)];
-								Debug.Log ("Trying new piece (" + Random_Piece + ") at last piece's connection position " + Last_Connection);
-
-
-								Destroy (p.gameObject);
-
-								p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
-								p.name = "piece " + i;
-								lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
-								lp.PreviousConnection = Last_lp;
-
-								for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
-									Remaining_Connections.Add (j);
-								}
-
-							}			
-
-						} // End of while (tries all pieces)
-						Debug.Log ("-------------------------------- No pieces fit the current connection postition. --------------------------------");
-						lp.PreviousConnection.OpenPoints.Remove (Last_Connection);
-						if (lp.PreviousConnection.OpenPoints.Count == 0) {
-							break;
-						}
-
-						if (!lp.CheckIfFits ()) {		// Try all open points	
-
-							Pieces_Left.Clear ();
-							for (int j = 0; j < Dangerous_Pieces.Count; j++) {
-								Pieces_Left.Add (j);
-							}
-
-							Destroy (p.gameObject);
-
-							p = Instantiate (Dangerous_Pieces [Random_Piece].gameObject, Vector3.zero, Quaternion.identity) as GameObject;	
-							p.name = "piece " + i;
-							lp = p.GetComponent<LevelPiece> ();							// These 3 statements generate the piece and name it
-							lp.PreviousConnection = Last_lp;
-
-							for (int j = 0; j < lp.NumberOfSides; j++) {				// This adds all available sides that can be used to connect
-								Remaining_Connections.Add (j);
-							}
-
-
-							if (lp.PreviousConnection.OpenPoints.Count > 0) {
-								Last_Connection = lp.PreviousConnection.Get_Connection ();
-								Debug.Log ("Changing last connection point to " + Last_Connection);
-								lp.PreviousConnection.OpenPoints.Remove (Last_Connection);
-								Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
-							} else {
-								break;
-							}
-
-						}	// End of if
-
-					}	// End of while (tries all connection points of last piece)
-
-					// 
-
-					Debug.Log ("------------------------ No pieces fit any of the current connection postitions. ------------------------");
-
-
-					if (!lp.CheckIfFits ()) {
-						lp.PreviousConnection = lp.PreviousConnection.PreviousConnection;
-
-						if (lp.PreviousConnection.PreviousConnection == null) {
-							break;
-						}
-
-						while (lp.PreviousConnection.PreviousConnection != null) {
-							lp.PreviousConnection = lp.PreviousConnection.PreviousConnection;
-							if (lp.PreviousConnection.OpenPoints.Count > 0) {
-								break;
-							}
-						}
-
-
-						Last_Connection = lp.PreviousConnection.Get_Connection ();
-						Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
-						Last_lp = lp.PreviousConnection;
-						//break;
-
-
-					}						
-				}	// End of while (tries last piece's last piece)
-			}	// End of if
-
-			if (lp.CheckIfFits ()) {
-				Debug.Log ("===================! " + lp.name + " placed sucessfully at position " + Last_Connection + " !===================");			
-			} else {
-				Debug.Log("Doesn't fit!");
-				Destroy (p.gameObject);
-				//return;
-				break;
-
-			}
-
-			lp.OpenPoints.Remove (Current_Connection);
-			//lp.OpenPoints.Remove (Next_Conntection);
-
-			Last_Connection = Next_Conntection;							// Sets the last connection to be the next one chosen
-			Last_ConnectionPosition = lp.Get_Pos (Next_Conntection);	// Gets it's position
-			Last_lp = lp;												// Saves the levelpiece for further use
-
-		}
-
-	}	// End of function
-
-
-
-	IEnumerator GenerateLevel(){
+	void GenerateLevel(){
 		/*
 		This function is a mess and i'm in the process of cleaning it. BUT IT WORKS DAMMIT
 		 Here's the rundown:
@@ -267,9 +59,10 @@ public class Level : MonoBehaviour {
 		If you can think of anything else that this should do let me know and i'll try it out
 
 		BUGS:
-			- When removing waitforseconds it does not compute properly. ???
+			- THIS IS KILLING ME. If you're a programmer PLEASE look at this. The script below will randomly remove open connections from a piece that should still be open. BUT when you turn this into a co-routine it works fine. >_<
 		*/
 
+		//yield return new WaitForSeconds (0f);	
 
 		// DEBUG =========
 		float PlayBackSpeed = 0.01f;
@@ -297,9 +90,9 @@ public class Level : MonoBehaviour {
 
 		float angle = 0;				// angle between last position inwards, and current piece's connection point outwards
 
-		//Random.seed = 100;
+		Random.seed = 1289438;
 
-		for (int i = 0; i < 200; i++) {	// Currently uses a set number and generates pieces until it hits that number
+		for (int i = 0; i < 20; i++) {	// Currently uses a set number and generates pieces until it hits that number
 			Pieces_Left.Clear();		// Clears the current cache of pieces left to choose from
 			for (int j = 0; j < Dangerous_Pieces.Count; j++) {	// Resets pieces to chosoe from
 				Pieces_Left.Add (j);
@@ -323,7 +116,7 @@ public class Level : MonoBehaviour {
 			Remaining_Connections.Remove(Current_Connection);			// Removes that side from being chosen again
 
 			if (Remaining_Connections.Count == 0) {
-				Next_Conntection = 404;
+				Next_Conntection = 411;
 			} else {
 				Next_Conntection = Remaining_Connections[Random.Range (0,Remaining_Connections.Count)];	// Picks a random place for the next piece to connect
 			}
@@ -340,17 +133,14 @@ public class Level : MonoBehaviour {
 			p.transform.RotateAround(lp.Get_Pos(Current_Connection),Vector3.up,angle);	// Rotates piece into place
 
 
-			/*
-			baby steps:
-			- Get last piece to stop it instead of error out
-			*/
 
-			yield return new WaitForSeconds (0.1f * PlayBackSpeed);	
 
-			if (!lp.CheckIfFits ()) {
+
+
+			if (!lp.CheckIfFits ()) {		// boxcast to see if it fits correctly
 				while (lp.PreviousConnection != null && !lp.CheckIfFits ()) {						// Tries all previous pieces in chain
-					while (lp.PreviousConnection.OpenPoints.Count + 1 > 0 && !lp.CheckIfFits ()) {	// try previous pieces open connections
-						while (Pieces_Left.Count + 1 > 0 && !lp.CheckIfFits ()) {					// Try all pieces at connection
+					while (lp.PreviousConnection.OpenPoints.Count > 1 && !lp.CheckIfFits ()) {	// try previous pieces open connections
+						while (Pieces_Left.Count > 1 && !lp.CheckIfFits ()) {					// Try all pieces at connection
 							while (Remaining_Connections.Count > 0 && !lp.CheckIfFits ()) {			// Try all rotations of current piece at connection							
 								Current_Connection = Remaining_Connections [Random.Range (0, Remaining_Connections.Count)];		// Picks a random point on piece to connect to last piece
 								Remaining_Connections.Remove (Current_Connection);												// Removes this point from being chosen again
@@ -375,7 +165,7 @@ public class Level : MonoBehaviour {
 
 								p.transform.RotateAround (lp.Get_Pos (Current_Connection), Vector3.up, angle);	// Rotates piece into place
 
-								yield return new WaitForSeconds (0.01f * PlayBackSpeed);	// Debug to show what is happening
+								//yield return new WaitForSeconds (0f);	// Debug to show what is happening // TODO BUG when this is removed some pieces will have open coneections points closed
 							}	// End of while (tries all rotations)
 							Debug.Log ("-------------------------- No rotations of current piece will work, changing piece. --------------------------");
 							Pieces_Left.Remove (Random_Piece);								// Since that piece didn't work, remove it from possible pieces to be chosen
@@ -403,7 +193,7 @@ public class Level : MonoBehaviour {
 								}
 
 							}			
-							yield return new WaitForSeconds (0.01f * PlayBackSpeed);		// Debug
+							//yield return new WaitForSeconds (0.0f);		// Debug
 						} // End of while (tries all pieces)
 						Debug.Log ("-------------------------------- No pieces fit the current connection postition. --------------------------------");
 
@@ -442,9 +232,9 @@ public class Level : MonoBehaviour {
 							}
 
 						}	// End of if
-						yield return new WaitForSeconds (0.01f * PlayBackSpeed);			// Debug
+						//yield return new WaitForSeconds (0.0f);			// Debug
 					}	// End of while (tries all connection points of last piece)
-					yield return new WaitForSeconds (0.01f * PlayBackSpeed);				// Debug
+					//yield return new WaitForSeconds (0.0f);				// Debug
 					Debug.Log ("------------------------ No pieces fit any of the current connection postitions. ------------------------");
 
 
@@ -463,6 +253,7 @@ public class Level : MonoBehaviour {
 
 
 						Last_Connection = lp.PreviousConnection.Get_Connection ();			// These next 3 set the next piece's connection areas
+
 						Last_ConnectionPosition = lp.PreviousConnection.Get_Pos (Last_Connection);
 						Last_lp = lp.PreviousConnection;
 

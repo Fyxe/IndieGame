@@ -17,13 +17,12 @@ public class LevelPiece : MonoBehaviour {
 	public List<int> OpenPoints = new List<int> ();
 
 	public int NumberOfSides = 0;
-	int LastSide = 404;
+	int LastSide = 505;
 
 	//[Header("Box Cast Data")]
 
 	Bounds bounds;
 
-	RaycastHit[] hits;
 	public List<GameObject> Debug_hits;
 
 	public LevelPiece PreviousConnection;
@@ -56,6 +55,7 @@ public class LevelPiece : MonoBehaviour {
 	public Vector3 Get_Dir(int w){
 		if (w > ConnectionPoints.Count - 1) {
 			return ConnectionPoint_Directions [0].position - ConnectionPoints [0].position;
+			Debug.LogError ("AHHHH");
 		} else {
 			return ConnectionPoint_Directions [w].position - ConnectionPoints [w].position;
 		}
@@ -77,15 +77,16 @@ public class LevelPiece : MonoBehaviour {
 		if (OpenPoints.Count == 0) {
 			return 404;
 		} else {
-			return OpenPoints [Random.Range (0, OpenPoints.Count)];
+			return OpenPoints[Random.Range (0, OpenPoints.Count)];
 		}
 	}
 
 	//--------------------------------------------------------------------------------------------------------------
 
 	public bool CheckIfFits(){				
-		hits = Physics.BoxCastAll (transform.position,bounds.extents * 0.9f,Vector3.up,transform.rotation,bounds.size.y);
-		List<RaycastHit> Hits = hits.ToList ();
+		List<RaycastHit> Hits = (Physics.BoxCastAll (transform.position,bounds.extents * 0.9f,Vector3.up,transform.rotation,bounds.size.y)).ToList();
+		Debug_hits.Clear ();
+		//List<RaycastHit> Hits = hits.ToList ();
 		int HitsThatIsntConnected = 0;
 		foreach (var i in Hits) {
 			if (i.collider.transform.root.gameObject != this.transform.root.gameObject) {
