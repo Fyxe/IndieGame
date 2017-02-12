@@ -18,10 +18,11 @@ public abstract class Equippable : Item {
 	0 - Head
 	1 - Chest
 	2 - Legs
-	3 - Feet
-	4 - Hands
-	5 - Neck
-	6 - Finger	
+	3 - Back
+	4 - Feet
+	5 - Hands
+	6 - Neck
+	7 - Finger	
 	*/
 
 	//===============================================[Functions]====================================================

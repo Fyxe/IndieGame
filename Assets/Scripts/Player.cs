@@ -12,6 +12,7 @@ public class Player : MonoBehaviour {
 
 	[Header("Attributes")]
 	public string Player_Name 		= "Bob";
+	public Currency Money = new Currency();
 
 	[Header("Statistics")]
 	public float HP_Current 		= 100f;
@@ -91,7 +92,7 @@ public class Player : MonoBehaviour {
 	void Start(){		
 		if (!Cor_SlowUpdate_Helper) {
 			Alpha = StartCoroutine (SlowUpdate_Helper ());
-		}
+		}			
 	}																					
 
 	//--------------------------------------------------------------------------------------------------------------

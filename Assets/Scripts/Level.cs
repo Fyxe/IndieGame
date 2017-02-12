@@ -40,7 +40,7 @@ public class Level : MonoBehaviour {
 
 	void Start(){		
 		//StartCoroutine (GenerateLevel ());
-		GenerateLevel();
+		//GenerateLevel();
 	}
 
 	//===============================================[Functions]====================================================
